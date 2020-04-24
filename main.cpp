@@ -1,11 +1,12 @@
-#include "typedef.h"
-#include "efi.h"
+#include "common.hpp"
+#include "efi.hpp"
 
 extern "C"
-void efi_main(void *ImageHandle __attribute__ ((unused)) , EFI_SYSTEM_TABLE *SystemTable){
+void efi_main(void *ImageHandle __attribute__ ((unused)) , EfiSystemTable *SystemTable){
+    //efi_init(SystemTable);
     SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
     SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Hello, world!\n");
-    EFI_INPUT_KEY key;
+    EfiInputKey key;
     wchar_t str[3];
     while(1) {
         if(!SystemTable->ConIn->ReadKeyStroke(SystemTable->ConIn, &key)) {

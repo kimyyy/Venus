@@ -1,6 +1,6 @@
 .PHONY: clean run gdb
 
-CXX:= x86_64-w64-mingw32-g++
+CC:= x86_64-w64-mingw32-g++
 CFLAGS := -m64 -Wall -Wextra -g3  -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin
 OBJCP:= objcopy
 QEMU := qemu-system-x86_64
@@ -10,14 +10,13 @@ EFI_ENTRY := efi_main
 
 all: main.efi
 
-main.efi: main.o Makefile
-	$(OBJCP) --target=efi-app-x86_64 $< $@
+main.efi: main.o
+	$(OBJCP) --target=efi-app-x86_64 $^ $@
 
-main.o: main.cpp Makefile
-	$(CXX) $(CFLAGS) -e $(EFI_ENTRY)  -o $@ $<
+main.o: main.cpp
+	$(CC) $(CFLAGS) -e $(EFI_ENTRY)  -o $@ $^
 
-
-run: main.efi Makefile
+run: main.efi
 	cp $< $(EFIPATH)
 	$(QEMU) -bios /usr/share/ovmf/OVMF.fd -gdb tcp::10000 -S -drive file=fat:rw:fs
 
