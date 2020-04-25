@@ -1,6 +1,10 @@
 #include "efi.hpp"
 #include "common.hpp"
 
+void clear(void){
+    ST->ConOut->ClearScreen(ST->ConOut);
+}
+
 void putc(wchar_t c){
     wchar_t str[2] = L" ";
     str[0] = c;

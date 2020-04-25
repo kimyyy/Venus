@@ -7,6 +7,13 @@ struct EfiInputKey {
   wchar_t UnicodeChar;
 };
 
+struct EfiGuid {
+    unsigned int Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char Data4[8];
+};
+
 struct EfiSimpleTextOutputProtocol {
   ull _buf;
   ull (*OutputString)(EfiSimpleTextOutputProtocol *This, wchar_t *String);
@@ -51,13 +58,48 @@ struct EfiBootServices {
     ull _buf9[3];
 
     // Library Services
-    ull _buf10[5];
+    ull _buf10[2];
+    ull (*LocateProtocol) (EfiGuid *Protocol, void *Registration, void **Interface);
+    ull _buf10_2[2];
 
     // 32-bit CRC Servies
     ull _buf11;
 
     // Miscellaneous Services
     ull _buf12[3];
+};
+
+struct EfiGraphicsOutputBitPixel {
+    unsigned char Blue;
+    unsigned char Green;
+    unsigned char Red;
+    unsigned char Reserved;
+};
+
+struct EfiGraphicsOutputModeInfo {
+    unsigned int Version;
+    unsigned int HorizontalResolution;
+    unsigned int VerticalResolution;
+    enum EfiGraphicsPixelFormat {
+        PixelRedGreenBlueReserved8BitPerColor,
+        PixelBlueGreenRedReserved8BitPerColor,
+        PixelBitMask,
+        PixelBltOnly,
+        PixelFormatMax
+    } PixelFormat;
+};
+
+struct EfiGraphicsOutputPtorocolMode {
+    unsigned int MaxMode;
+    unsigned int Mode;
+    EfiGraphicsOutputModeInfo * Info;
+    ull SizeOfInfo;
+    ull FrameBufferBase;
+};
+
+struct EfiGraphicsOutputPtorocol {
+    ull _buf[3];
+    EfiGraphicsOutputPtorocolMode *Mode;
 };
 
 struct EfiSystemTable {
@@ -70,6 +112,7 @@ struct EfiSystemTable {
 };
 
 extern EfiSystemTable *ST;
+extern EfiGraphicsOutputPtorocol *GOP;
 
 void efi_init(EfiSystemTable *SystemTable);
 

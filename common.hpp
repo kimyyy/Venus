@@ -6,6 +6,7 @@ typedef unsigned long long ull;
 #define TRUE   1
 #define FALSE  0
 
+void clear(void);
 void putc(wchar_t c);
 void puts(wchar_t *s);
 wchar_t getc(void);

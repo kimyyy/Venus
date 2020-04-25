@@ -5,7 +5,7 @@
 extern "C"
 void efi_main(void *ImageHandle __attribute__ ((unused)) , EfiSystemTable *SystemTable){
     efi_init(SystemTable);
-    ST->ConOut->ClearScreen(SystemTable->ConOut);
+    ST->ConOut->ClearScreen(ST->ConOut);
     puts(L"Hello,UEFI!\r\n");
     shell();
 }
