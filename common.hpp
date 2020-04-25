@@ -9,6 +9,7 @@ typedef unsigned long long ull;
 void ClearScreen(void);
 void putc(wchar_t c);
 void puts(wchar_t *s);
+void puth(ull val, unsigned char num_digits);
 wchar_t getc(void);
 unsigned int gets(wchar_t *buf, unsigned int buf_size);
 unsigned int strlen(wchar_t *s);

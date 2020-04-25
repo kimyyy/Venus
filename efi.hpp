@@ -102,6 +102,20 @@ struct EfiGraphicsOutputPtorocol {
     EfiGraphicsOutputPtorocolMode *Mode;
 };
 
+struct EfiSimplePointerState{
+    int RelativeMovementX;
+    int RelativeMovementY;
+    int RelativeMovementZ;
+    unsigned char LeftButton;
+    unsigned char RightButton;
+};
+
+struct EfiSimplePointerProtocol{
+    ull (*Reset) (EfiSimplePointerProtocol *This, unsigned char ExtendedVerification);
+    ull (*GetState) (EfiSimplePointerProtocol *This, EfiSimplePointerState *State);
+    void *WaitForInput;
+};
+
 struct EfiSystemTable {
     char _buf[44];
     EfiSimpleTextInputProtocol *ConIn;
@@ -113,6 +127,7 @@ struct EfiSystemTable {
 
 extern EfiSystemTable *ST;
 extern EfiGraphicsOutputPtorocol *GOP;
+extern EfiSimplePointerProtocol *SPP;
 
 void efi_init(EfiSystemTable *SystemTable);
 

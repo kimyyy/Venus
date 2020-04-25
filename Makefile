@@ -18,8 +18,8 @@ main.o: main.cpp efi.cpp common.cpp shell.cpp graphics.cpp gui.cpp
 
 run: main.efi
 	cp $< $(EFIPATH)
-	$(QEMU) -bios /usr/share/ovmf/OVMF.fd -gdb tcp::10000 -S -drive file=fat:rw:fs
-
+	$(QEMU) -bios /usr/share/ovmf/OVMF.fd -gdb tcp::10000 -S -cpu qemu64 -drive file=fat:rw:fs
+#--device qemu-xhci device usb-mouse -device usb-kbd 
 gdb: Makefile fs/EFI/BOOT/BOOTX64.EFI
 	gdb-multiarch -x start.gdb $(EFIPATH)
 
