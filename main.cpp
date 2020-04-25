@@ -3,9 +3,9 @@
 
 extern "C"
 void efi_main(void *ImageHandle __attribute__ ((unused)) , EfiSystemTable *SystemTable){
-    //efi_init(SystemTable);
-    SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
-    SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Hello, world!\n");
+    efi_init(SystemTable);
+    ST->ConOut->ClearScreen(SystemTable->ConOut);
+    puts(L"Hello,UEFI!\n");
     EfiInputKey key;
     wchar_t str[3];
     while(1) {

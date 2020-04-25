@@ -13,7 +13,7 @@ all: main.efi
 main.efi: main.o
 	$(OBJCP) --target=efi-app-x86_64 $^ $@
 
-main.o: main.cpp
+main.o: main.cpp efi.cpp common.cpp
 	$(CC) $(CFLAGS) -e $(EFI_ENTRY)  -o $@ $^
 
 run: main.efi
@@ -21,7 +21,7 @@ run: main.efi
 	$(QEMU) -bios /usr/share/ovmf/OVMF.fd -gdb tcp::10000 -S -drive file=fat:rw:fs
 
 gdb: Makefile fs/EFI/BOOT/BOOTX64.EFI
-	gdb-multiarch $(EFIPATH)
+	gdb-multiarch -x start.gdb $(EFIPATH)
 
 clean:
 	rm -rf *.o *.efi

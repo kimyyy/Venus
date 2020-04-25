@@ -71,5 +71,5 @@ struct EfiSystemTable {
 
 extern EfiSystemTable *ST;
 
-extern "C" void efi_init(EfiSystemTable *SystemTable);
+void efi_init(EfiSystemTable *SystemTable);
 
