@@ -14,7 +14,7 @@ void puts(wchar_t *s){
 wchar_t getc(void){
     EfiInputKey key;
     ull wait_index;
-    ST->BootServices.WaitForEvent(1, &(ST->ConIn->WaitForKey), &wait_index);
+    ST->BootServices->WaitForEvent(1, &(ST->ConIn->WaitForKey), &wait_index);
     while(ST->ConIn->ReadKeyStroke(ST->ConIn, &key));
 
     return key.UnicodeChar;

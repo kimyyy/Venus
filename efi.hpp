@@ -66,7 +66,7 @@ struct EfiSystemTable {
     ull _buf2;
     EfiSimpleTextOutputProtocol *ConOut;
     ull _buf3[3];
-    EfiBootServices BootServices;
+    EfiBootServices *BootServices;
 };
 
 extern EfiSystemTable *ST;
