@@ -12,7 +12,7 @@ extern "C"
 void efi_main(void *ImageHandle __attribute__ ((unused)) , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
-    clear();
+    ClearScreen();
     puts(L"Hello,UEFI!\r\n");
     shell();
 }

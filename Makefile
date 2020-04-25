@@ -13,7 +13,7 @@ all: main.efi
 main.efi: main.o
 	$(OBJCP) --target=efi-app-x86_64 $^ $@
 
-main.o: main.cpp efi.cpp common.cpp shell.cpp graphics.cpp
+main.o: main.cpp efi.cpp common.cpp shell.cpp graphics.cpp gui.cpp
 	$(CC) $(CFLAGS) -e $(EFI_ENTRY)  -o $@ $^
 
 run: main.efi

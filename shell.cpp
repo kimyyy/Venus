@@ -1,6 +1,7 @@
 #include "common.hpp"
 #include "shell.hpp"
 #include "graphics.hpp"
+#include "gui.hpp"
 
 #define MAX_COMMAND_LEN 100
 
@@ -18,7 +19,9 @@ void shell(void){
         else if(!strcmp(L"rect", com))
             draw_rect(rect, white);
         else if(!strcmp(L"clear", com))
-            clear();
+            ClearScreen();
+        else if(!strcmp(L"gui", com))
+            gui();
         else if(!strcmp(L"exit", com))
             break;
         else

@@ -1,7 +1,7 @@
 #include "efi.hpp"
 #include "common.hpp"
 
-void clear(void){
+void ClearScreen(void){
     ST->ConOut->ClearScreen(ST->ConOut);
 }
 
