@@ -2,7 +2,8 @@
 
 Baremetal uefi application written by c++.
 
-This application is based on uefi_baremetal tutorial paper by Takuma Ogami.
+This application is based on a uefi_baremetal tutorial paper by Takuma Ogami.
+(https://github.com/cupnes/c92_uefi_bare_metal_programming_samples)
 
 # How to build and start
 
