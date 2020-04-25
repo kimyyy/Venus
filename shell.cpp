@@ -6,7 +6,7 @@
 
 void shell(void){
     wchar_t com[MAX_COMMAND_LEN];
-    Rect rect = {.x = 10, .y = 10, .w = 100, .h = 10};
+    Rect rect = {.x = 10, .y = 10, .w = 100, .h = 200};
 
     while(TRUE){
         puts(L"poiOS> ");

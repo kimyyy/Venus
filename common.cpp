@@ -40,6 +40,28 @@ unsigned int gets(wchar_t *buf, unsigned int buf_size){
     return i;
 }
 
+// return: string length
+// WARN: do not input uninitialized string
+unsigned int strlen(wchar_t *s){
+    unsigned int i = 0;
+    while(s[i] != '\0'){
+        i++;
+    }
+    return i;
+}
+
+// string concat function
+// if succeed, return: current content size,
+// else, return: -1
+int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_content_size, const wchar_t *s){
+    unsigned int i;
+    for(i = buf_content_size; i < buf_size;i++){
+        buf[i] = s[i-buf_content_size];
+        if(buf[i] == '\0')return (int)i;
+    }
+    return -1;
+}
+
 int strcmp(const wchar_t *s1, const wchar_t *s2){
     char is_equal = 1;
     for(;(*s1 != L'\0') && (*s2 != L'\0'); s1++, s2++){
