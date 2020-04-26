@@ -6,6 +6,20 @@
 
 #define MAX_COMMAND_LEN 100
 
+void resolution(void){
+    unsigned int hr = GOP->Mode->Info->HorizontalResolution;
+    unsigned int vr = GOP->Mode->Info->VerticalResolution;
+    wchar_t buf[100];
+    strcat(buf, 100, 0, L"hr: 0x");
+    intToStr(buf, 100, strlen(buf), hr);
+    strcat(buf, 100, strlen(buf), L"\r\n");
+    strcat(buf, 100, strlen(buf), L"vr: 0x");
+    intToStr(buf, 100, strlen(buf), vr);
+    unsigned int result = strcat(buf, 100, strlen(buf), L"\r\n");
+    if(result) puts(buf);
+    else puts(L"buf is too small!");
+}
+
 void pstat(void){
     ull status;
     EfiSimplePointerState s;
@@ -50,6 +64,8 @@ void shell(void){
             gui();
         else if(!strcmp(L"pstat", com))
             pstat();
+        else if(!strcmp(L"resolution", com))
+            resolution();
         else if(!strcmp(L"exit", com))
             break;
         else

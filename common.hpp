@@ -6,6 +6,10 @@ typedef unsigned long long ull;
 #define TRUE   1
 #define FALSE  0
 
+#define CAT(A, B) A##B
+#define STRING(str) #str
+#define WSTRING(A) CAT(L, #A)
+
 void ClearScreen(void);
 void putc(wchar_t c);
 void puts(wchar_t *s);
