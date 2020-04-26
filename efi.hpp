@@ -31,6 +31,12 @@ struct EfiGuid {
     unsigned char Data4[8];
 };
 
+struct EfiDevicePathProtocol {
+    unsigned char Type;
+    unsigned char SubType;
+    unsigned char Length[2];
+};
+
 struct EfiSimpleTextOutputProtocol {
   ull _buf;
   ull (*OutputString)(EfiSimpleTextOutputProtocol *This, const wchar_t *String);
@@ -62,7 +68,14 @@ struct EfiBootServices {
     ull _buf5[9];
 
     // Image Services
-    ull _buf6[5];
+    ull (*LoadImage)(
+            unsigned char BootPolicy,
+            void *ParentImageHandle,
+            EfiDevicePathProtocol *DevicePath,
+            void *SourceBuffer,
+            ull SourceSize,
+            void **ImageHandle);
+    ull _buf6[4];
 
     // Miscellaneous Services
     ull _buf7[2];
@@ -189,12 +202,6 @@ enum EfiMemoryType {
     EfiMaxMemoryType
 };
 
-struct EfiDevicePathProtocol {
-    unsigned char Type;
-    unsigned char SubType;
-    unsigned char Length[2];
-};
-
 struct EfiLoadedImageProtocol {
     unsigned int Revision;
     void *ParentHandle;
@@ -224,6 +231,11 @@ struct EfiDevicePathFromTextProtocol {
     EfiDevicePathProtocol *(*ConvertTextToDevicePath) (const wchar_t *TextDevicePath);
 };
 
+struct EfiDevicePathUtilitiesProtocol {
+    ull _buf[3];
+    EfiDevicePathProtocol *(*AppendDeviceNode)(const EfiDevicePathProtocol *DevicePath, EfiDevicePathProtocol *DeviceNode);
+};
+
 
 extern EfiSystemTable *ST;
 extern EfiGraphicsOutputPtorocol *GOP;
@@ -231,7 +243,9 @@ extern EfiSimplePointerProtocol *SPP;
 extern EfiSimpleFileSystemProtocol *SFSP;
 extern EfiDevicePathToTextProtocol *DPTTP;
 extern EfiDevicePathFromTextProtocol *DPFTP;
+extern EfiDevicePathUtilitiesProtocol *DPUP;
 extern EfiGuid lip_guid;
+extern EfiGuid dpp_guid;
 
 void efi_init(EfiSystemTable *SystemTable);
 
