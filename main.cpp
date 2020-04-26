@@ -13,6 +13,9 @@ void efi_main(void *ImageHandle __attribute__ ((unused)) , EfiSystemTable *Syste
 
     efi_init(SystemTable);
     ClearScreen();
-    puts(L"Hello,UEFI!\r\n");
-    shell();
+    wchar_t buf[100] = L"HEllo: ";
+    intToStr(buf, 100, strlen(buf), 0xf1);
+    puts(buf);
+    //shell();
+    while(1);
 }
