@@ -11,8 +11,8 @@ typedef unsigned long long ull;
 #define WSTRING(A) CAT(L, #A)
 
 void ClearScreen(void);
-void putc(wchar_t c);
-void puts(wchar_t *s);
+void putc(const wchar_t c);
+void puts(const wchar_t *s);
 void puth(ull val, unsigned char num_digits);
 wchar_t getc(void);
 unsigned int gets(wchar_t *buf, unsigned int buf_size);
@@ -21,5 +21,5 @@ unsigned int intToStr(wchar_t * buf, unsigned int buf_size, unsigned int buf_con
 void strncpy(wchar_t *dst, wchar_t *src, ull n);
 unsigned int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_content_size, const wchar_t *s);
 int strcmp(const wchar_t *s1, const wchar_t *s2);
-unsigned char check_warn_error(ull status, wchar_t *name);
-void assert(ull status, wchar_t *message);
+unsigned char check_warn_error(ull status, const wchar_t *name);
+void assert(ull status, const wchar_t *message);

@@ -7,13 +7,13 @@ void ClearScreen(void){
     ST->ConOut->ClearScreen(ST->ConOut);
 }
 
-void putc(wchar_t c){
+void putc(const wchar_t c){
     wchar_t str[2] = L" ";
     str[0] = c;
     ST->ConOut->OutputString(ST->ConOut, str);
 }
 
-void puts(wchar_t *s){
+void puts(const wchar_t *s){
     ST->ConOut->OutputString(ST->ConOut, s);
 }
 
@@ -141,7 +141,7 @@ int strcmp(const wchar_t *s1, const wchar_t *s2){
 }
 
 
-unsigned char check_warn_error(ull status, wchar_t *message){
+unsigned char check_warn_error(ull status, const wchar_t *message){
     if(status){
         puts(message);
         puts(L":");
@@ -151,7 +151,7 @@ unsigned char check_warn_error(ull status, wchar_t *message){
     return !status;
 }
 
-void assert(ull status, wchar_t *message){
+void assert(ull status, const wchar_t *message){
     if(!check_warn_error(status, message))
         while(1);
 }

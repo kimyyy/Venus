@@ -16,7 +16,7 @@ struct EfiGuid {
 
 struct EfiSimpleTextOutputProtocol {
   ull _buf;
-  ull (*OutputString)(EfiSimpleTextOutputProtocol *This, wchar_t *String);
+  ull (*OutputString)(EfiSimpleTextOutputProtocol *This, const wchar_t *String);
   ull _buf2[4];
   ull (*ClearScreen)(EfiSimpleTextOutputProtocol *This);
 };
