@@ -18,6 +18,11 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     puts(L"lip->FilePath: ");
     puts(DPTTP->ConvertDevicePathToText(lip->FilePath, FALSE, FALSE));
     puts(L"\r\n");
+    EfiDevicePathProtocol *dev_path;
+    dev_path = DPFTP->ConvertTextToDevicePath(L"\\test.efi");
+    puts(L"dev_path: ");
+    puts(DPTTP->ConvertDevicePathToText(dev_path, FALSE, FALSE));
+    puts(L"\r\n");
     while(TRUE);
     //shell();
 

@@ -219,12 +219,18 @@ struct EfiDevicePathToTextProtocol {
     wchar_t *(*ConvertDevicePathToText)(const EfiDevicePathProtocol *DeviceNode, unsigned char DisplayOnly, unsigned char AllowShortcuts);
 };
 
+struct EfiDevicePathFromTextProtocol {
+    ull _buf;
+    EfiDevicePathProtocol *(*ConvertTextToDevicePath) (const wchar_t *TextDevicePath);
+};
+
 
 extern EfiSystemTable *ST;
 extern EfiGraphicsOutputPtorocol *GOP;
 extern EfiSimplePointerProtocol *SPP;
 extern EfiSimpleFileSystemProtocol *SFSP;
 extern EfiDevicePathToTextProtocol *DPTTP;
+extern EfiDevicePathFromTextProtocol *DPFTP;
 extern EfiGuid lip_guid;
 
 void efi_init(EfiSystemTable *SystemTable);
