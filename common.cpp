@@ -112,6 +112,12 @@ unsigned int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_conten
     return 0;
 }
 
+void strncpy(wchar_t *dst, wchar_t *src, ull n){
+    while(n--){
+        *dst++ = *src++;
+    }
+}
+
 int strcmp(const wchar_t *s1, const wchar_t *s2){
     char is_equal = 1;
     for(;(*s1 != L'\0') && (*s2 != L'\0'); s1++, s2++){
@@ -132,4 +138,20 @@ int strcmp(const wchar_t *s1, const wchar_t *s2){
     }else {
         return (int)(*s1-*s2);
     }
+}
+
+
+unsigned char check_warn_error(ull status, wchar_t *message){
+    if(status){
+        puts(message);
+        puts(L":");
+        puth(status, 16);
+        puts(L"\r\n");
+    }
+    return !status;
+}
+
+void assert(ull status, wchar_t *message){
+    if(!check_warn_error(status, message))
+        while(1);
 }

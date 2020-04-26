@@ -116,6 +116,24 @@ struct EfiSimplePointerProtocol{
     void *WaitForInput;
 };
 
+struct EfiFileInfo {
+    unsigned char _buf[80];
+    wchar_t FileName[];
+};
+
+struct EfiFileProtocol {
+    ull _buf;
+    ull (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, wchar_t *FileName, ull OpenMode, ull Attributes);
+    ull (*Close)(EfiFileProtocol *This);
+    ull _buf2;
+    ull (*Read)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
+};
+
+struct EfiSimpleFileSystemProtocol {
+    ull Revision;
+    ull (*OpenVolume)(EfiSimpleFileSystemProtocol *This, EfiFileProtocol **Root);
+};
+
 struct EfiSystemTable {
     char _buf[44];
     EfiSimpleTextInputProtocol *ConIn;
@@ -128,6 +146,7 @@ struct EfiSystemTable {
 extern EfiSystemTable *ST;
 extern EfiGraphicsOutputPtorocol *GOP;
 extern EfiSimplePointerProtocol *SPP;
+extern EfiSimpleFileSystemProtocol *SFSP;
 
 void efi_init(EfiSystemTable *SystemTable);
 
