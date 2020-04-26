@@ -7,6 +7,8 @@
 #define MAX_FILE_BUF 1024
 
 struct File {
+    Rect rect;
+    unsigned char is_highlight;
     wchar_t name[MAX_FILE_NAME_LEN];
 };
 

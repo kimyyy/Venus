@@ -10,6 +10,9 @@ typedef unsigned long long ull;
 #define STRING(str) #str
 #define WSTRING(A) CAT(L, #A)
 
+#define SC_OFS 0x1680
+#define SC_ESC (SC_OFS + 0x0017)
+
 void ClearScreen(void);
 void putc(const wchar_t c);
 void puts(const wchar_t *s);

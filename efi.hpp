@@ -2,6 +2,11 @@
 
 #pragma once
 
+#define EFI_FILE_MODE_READ 0x0000000000000001
+#define EFI_FILE_MODE_WRITE 0x0000000000000002
+
+#define EFI_FILE_READ_ONLY 0x0000000000000001
+
 struct EfiInputKey {
   wchar_t ScanCode;
   wchar_t UnicodeChar;
@@ -123,10 +128,13 @@ struct EfiFileInfo {
 
 struct EfiFileProtocol {
     ull _buf;
-    ull (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, wchar_t *FileName, ull OpenMode, ull Attributes);
+    ull (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, const wchar_t *FileName, ull OpenMode, ull Attributes);
     ull (*Close)(EfiFileProtocol *This);
     ull _buf2;
     ull (*Read)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
+    ull (*Write)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
+    ull _buf3[4];
+    ull (*Flush)(EfiFileProtocol *This);
 };
 
 struct EfiSimpleFileSystemProtocol {

@@ -40,7 +40,7 @@ wchar_t getc(void){
     ST->BootServices->WaitForEvent(1, &(ST->ConIn->WaitForKey), &wait_index);
     while(ST->ConIn->ReadKeyStroke(ST->ConIn, &key));
 
-    return key.UnicodeChar;
+    return (key.UnicodeChar)? key.UnicodeChar : (key.ScanCode + SC_OFS);;
 }
 
 unsigned int gets(wchar_t *buf, unsigned int buf_size){

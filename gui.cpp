@@ -1,7 +1,12 @@
 #include "efi.hpp"
 #include "common.hpp"
+#include "file.hpp"
 #include "graphics.hpp"
+#include "shell.hpp"
 #include "gui.hpp"
+
+#define WIDTH_PER_CH 8
+#define HEIGHT_PER_CH 20
 
 EfiGraphicsOutputBitPixel cursor_tmp = {0, 0, 0, 0};
 int cursor_old_x;
@@ -31,18 +36,42 @@ void put_cursor(int x, int y){
     cursor_old_y = y;
 }
 
+int ls_gui(void){
+    int file_num;
+    Rect t;
+    int idx;
+    ClearScreen();
+    ClearScreen();
+
+    file_num = ls();
+    t.x = 0;
+    t.y = 0;
+    t.w = (MAX_FILE_NAME_LEN - 1) * WIDTH_PER_CH;
+    t.h = HEIGHT_PER_CH;
+    for(idx = 0; idx < file_num;idx++){
+        file_list[idx].rect.x = t.x;
+        file_list[idx].rect.y = t.y;
+        file_list[idx].rect.w = t.w;
+        file_list[idx].rect.h = t.h;
+        draw_rect(file_list[idx].rect, white);
+        t.x += file_list[idx].rect.w + WIDTH_PER_CH;
+
+        file_list[idx].is_highlight = FALSE;
+    }
+    return file_num;
+}
+
 void gui(void){
-    Rect r = {10, 10, 20, 20};
     ull status;
     EfiSimplePointerState s;
     int px = 0, py = 0;
     ull wait_index;
-    unsigned char is_highlight = FALSE;
-    ClearScreen();
+    int file_num;
+    int idx;
     SPP->Reset(SPP, FALSE);
 
     // draw rect as a file
-    draw_rect(r, white);
+    file_num = ls_gui();
 
     while(TRUE){
         ST->BootServices->WaitForEvent(1, &(SPP->WaitForInput), &wait_index);
@@ -63,15 +92,18 @@ void gui(void){
             // draw mouse cursor
             put_cursor(px, py);
 
-            if(is_in_rect(px, py, r)){
-                if(!is_highlight) {
-                    draw_rect(r, yellow);
-                    is_highlight = TRUE;
-                }
-            }else {
-                if(is_highlight){
-                    draw_rect(r, white);
-                    is_highlight = FALSE;
+            // update file icon
+            for(idx = 0; idx < file_num;idx++){
+                if(is_in_rect(px, py, file_list[idx].rect)){
+                    if(!file_list[idx].is_highlight){
+                        draw_rect(file_list[idx].rect, yellow);
+                        file_list[idx].is_highlight = TRUE;
+                    }
+                }else {
+                    if(file_list[idx].is_highlight){
+                        draw_rect(file_list[idx].rect, white);
+                        file_list[idx].is_highlight = FALSE;
+                    }
                 }
             }
         }

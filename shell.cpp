@@ -56,6 +56,69 @@ void resolution(void){
     else puts(L"buf is too small!");
 }
 
+void cat(const wchar_t *file_name){
+    ull status;
+    EfiFileProtocol *root;
+    EfiFileProtocol *file;
+    ull buf_size = MAX_FILE_BUF;
+    wchar_t file_buf[MAX_FILE_BUF / 2];
+
+    status = SFSP->OpenVolume(SFSP, &root);
+    assert(status, L"SFSP->OpenVolume");
+
+    status = root->Open(root, &file, file_name, EFI_FILE_MODE_READ, 0);
+    assert(status, L"root->Open");
+
+    status = file->Read(file, &buf_size, (void *)file_buf);
+    assert(status, L"file->Read");
+
+    puts(file_buf);
+
+    file->Close(file);
+    root->Close(root);
+}
+
+void edit(const wchar_t *file_name){
+    ull status;
+    EfiFileProtocol *root;
+    EfiFileProtocol *file;
+    ull buf_size = MAX_FILE_BUF;
+    wchar_t file_buf[MAX_FILE_BUF /2 ];
+    int i = 0;
+    wchar_t ch;
+
+    ClearScreen();
+    while(TRUE){
+        ch = getc();
+
+        if(ch == SC_ESC){
+            break;
+        }
+
+        putc(ch);
+        file_buf[i++] = ch;
+
+        if(ch == L'\r'){
+            putc(L'\n');
+            file_buf[i++] = L'\n';
+        }
+    }
+    file_buf[i] = L'\0';
+
+    status = SFSP->OpenVolume(SFSP, &root);
+    assert(status, L"SFSP->OpenVolume");
+
+    status = root->Open(root, &file, file_name, EFI_FILE_MODE_READ | EFI_FILE_MODE_WRITE, 0);
+    assert(status, L"root->Open");
+
+    status = file->Write(file, &buf_size, (void *)file_buf);
+    assert(status, L"file->Write");
+
+    file->Flush(file);
+    file->Close(file);
+    root->Close(root);
+}
+
 void pstat(void){
     ull status;
     EfiSimplePointerState s;
@@ -105,9 +168,16 @@ void shell(void){
             resolution();
         else if(!strcmp(L"ls", com))
             ls();
+        else if(!strcmp(L"cat",com))
+            cat(L"abc");
+        else if(!strcmp(L"edit", com))
+            edit(L"abc");
         else if(!strcmp(L"exit", com))
             break;
-        else
-            puts(L"Command not found\r\n");
+        else{
+            puts(L"Command not found: ");
+            puts(com);
+            puts(L"\r\n");
+        }
     }
 }
