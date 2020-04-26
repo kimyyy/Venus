@@ -4,8 +4,20 @@
 
 #define EFI_FILE_MODE_READ 0x0000000000000001
 #define EFI_FILE_MODE_WRITE 0x0000000000000002
+#define EFI_FILE_MODE_CREATE 0x8000000000000000
 
 #define EFI_FILE_READ_ONLY 0x0000000000000001
+
+#define EFI_SUCCESS	0
+#define EFI_ERROR	0x8000000000000000
+#define EFI_UNSUPPORTED	(EFI_ERROR | 3)
+
+#define EFI_OPEN_PROTOCOL_BY_HANDLE_PROTOCOL	0x00000001
+#define EFI_OPEN_PROTOCOL_GET_PROTOCOL		0x00000002
+#define EFI_OPEN_PROTOCOL_TEST_PROTOCOL		0x00000004
+#define EFI_OPEN_PROTOCOL_BY_CHILD_CONTROLLER	0x00000008
+#define EFI_OPEN_PROTOCOL_BY_DRIVER		0x00000010
+#define EFI_OPEN_PROTOCOL_EXCLUSIVE		0x00000020
 
 struct EfiInputKey {
   wchar_t ScanCode;
@@ -60,7 +72,15 @@ struct EfiBootServices {
     ull _buf8[2];
 
     // Open and Close Protocol Services
-    ull _buf9[3];
+    ull (*OpenProtocol) (
+            void *Handle,
+            EfiGuid *Protocol,
+            void **Interface,
+            void *AgentHandle,
+            void *ControllerHandle,
+            unsigned int Attributes
+            );
+    ull _buf9[2];
 
     // Library Services
     ull _buf10[2];
@@ -151,10 +171,61 @@ struct EfiSystemTable {
     EfiBootServices *BootServices;
 };
 
+enum EfiMemoryType {
+    EfiReservedMemoryType,
+    EfiLoaderCode,
+    EfiLoaderData,
+    EfiBootServicesCode,
+    EfiBootServicesData,
+    EfiRuntimeServicesCode,
+    EfiRuntimeServicesData,
+    EfiConventionalMemory,
+    EfiUnusableMemory,
+    EfiACPIReclaimMemory,
+    EfiACPIMemoryNVS,
+    EfiMemoryMappedIO,
+    EfiMemoryMappedIOPortSpace,
+    EfiPalCode,
+    EfiMaxMemoryType
+};
+
+struct EfiDevicePathProtocol {
+    unsigned char Type;
+    unsigned char SubType;
+    unsigned char Length[2];
+};
+
+struct EfiLoadedImageProtocol {
+    unsigned int Revision;
+    void *ParentHandle;
+    EfiSystemTable *SystemTable;
+    // Source location of the image
+    void *DeviceHandle;
+    EfiDevicePathProtocol *FilePath;
+    void *Reserved;
+    // Image's load options
+    unsigned int LoadOptionSize;
+    void *LoadOptions;
+    // Location where image was loaded
+    void *ImageBase;
+    ull ImageSize;
+    EfiMemoryType ImageCodeType;
+    EfiMemoryType ImageDataType;
+    ull (*Unload)(void *ImageHandle);
+};
+
+struct EfiDevicePathToTextProtocol {
+    ull _buf;
+    wchar_t *(*ConvertDevicePathToText)(const EfiDevicePathProtocol *DeviceNode, unsigned char DisplayOnly, unsigned char AllowShortcuts);
+};
+
+
 extern EfiSystemTable *ST;
 extern EfiGraphicsOutputPtorocol *GOP;
 extern EfiSimplePointerProtocol *SPP;
 extern EfiSimpleFileSystemProtocol *SFSP;
+extern EfiDevicePathToTextProtocol *DPTTP;
+extern EfiGuid lip_guid;
 
 void efi_init(EfiSystemTable *SystemTable);
 
