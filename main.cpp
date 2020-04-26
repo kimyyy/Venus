@@ -52,6 +52,14 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     status = ST->BootServices->LoadImage(FALSE, ImageHandle, dev_path_merged, NULL, 0, &image);
     assert(status ,L"LoadImage");
     puts(L"LoadImage: Success!\r\n");
+
+
+    // start image
+    status = ST->BootServices->StartImage(image, (ull *)NULL, (unsigned short **)NULL);
+    assert(status , L"startimage");
+    puts(L"startImage: Success!\r\n");
+
+    // panic
     while(TRUE);
     //shell();
 

@@ -75,7 +75,11 @@ struct EfiBootServices {
             void *SourceBuffer,
             ull SourceSize,
             void **ImageHandle);
-    ull _buf6[4];
+    ull (*StartImage)(
+            void *ImageHandle,
+            ull *ExitDataSize,
+            unsigned short **ExitData);
+    ull _buf6[3];
 
     // Miscellaneous Services
     ull _buf7[2];
