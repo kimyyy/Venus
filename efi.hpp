@@ -19,6 +19,37 @@
 #define EFI_OPEN_PROTOCOL_BY_DRIVER		0x00000010
 #define EFI_OPEN_PROTOCOL_EXCLUSIVE		0x00000020
 
+enum EfiMemoryType {
+    EfiReservedMemoryType,
+    EfiLoaderCode,
+    EfiLoaderData,
+    EfiBootServicesCode,
+    EfiBootServicesData,
+    EfiRuntimeServicesCode,
+    EfiRuntimeServicesData,
+    EfiConventionalMemory,
+    EfiUnusableMemory,
+    EfiACPIReclaimMemory,
+    EfiACPIMemoryNVS,
+    EfiMemoryMappedIO,
+    EfiMemoryMappedIOPortSpace,
+    EfiPalCode,
+    EfiMaxMemoryType
+};
+
+enum EfiTimerDelay {
+    TimerCancel,
+    TimerPeriodic,
+    TimerRelative,
+};
+
+enum EfiResetType {
+    EfiResetCold,
+    EfiResetWarm,
+    EfiResetShutdown,
+    EfiResetPlatformSpecific
+};
+
 struct EfiInputKey {
   wchar_t ScanCode;
   wchar_t UnicodeChar;
@@ -50,6 +81,23 @@ struct EfiSimpleTextInputProtocol {
   void *WaitForKey;
 };
 
+struct EfiRuntimeServices {
+    char _buf_rs1[24];
+
+    // Time Services
+    ull _buf_rs2[4];
+
+    // Virtual Memory Services
+    ull _buf_rs3[2];
+
+    // variable Services
+    ull _buf_rs4[3];
+
+    // Miscellaneous Services
+    ull _buf_rs5;
+    void (*ResetSystem)(EfiResetType ResetType, ull ResetStatus, ull DataSize, void *ResetData);
+};
+
 struct EfiBootServices {
     char _buf1[24];
 
@@ -57,10 +105,18 @@ struct EfiBootServices {
     ull _buf2[2];
     
     // Memory Services
-    ull _buf3[5];
+    ull _buf3[3];
+    ull (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
+    ull (*FreePool)(void *Buffer);
 
     // Event and Timer Services
-    ull _buf4[2];
+    ull (*CreateEvent)(
+            unsigned int Type,
+            ull NotifyTpl,
+            void (*NotifyFunction)(void *Event, void *Context),
+            void *NotifyContext,
+            void *Event);
+    ull (*SetTimer)(void *Event, EfiTimerDelay Type, ull TriggerTime);
     ull (*WaitForEvent) (ull NumberOfEvents, void **Event, ull *Index);
     ull _buf4_2[3];
 
@@ -184,26 +240,9 @@ struct EfiSystemTable {
     EfiSimpleTextInputProtocol *ConIn;
     ull _buf2;
     EfiSimpleTextOutputProtocol *ConOut;
-    ull _buf3[3];
+    ull _buf3[2];
+    EfiRuntimeServices *RuntimeServices;
     EfiBootServices *BootServices;
-};
-
-enum EfiMemoryType {
-    EfiReservedMemoryType,
-    EfiLoaderCode,
-    EfiLoaderData,
-    EfiBootServicesCode,
-    EfiBootServicesData,
-    EfiRuntimeServicesCode,
-    EfiRuntimeServicesData,
-    EfiConventionalMemory,
-    EfiUnusableMemory,
-    EfiACPIReclaimMemory,
-    EfiACPIMemoryNVS,
-    EfiMemoryMappedIO,
-    EfiMemoryMappedIOPortSpace,
-    EfiPalCode,
-    EfiMaxMemoryType
 };
 
 struct EfiLoadedImageProtocol {
