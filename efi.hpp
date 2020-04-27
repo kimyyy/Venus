@@ -19,6 +19,13 @@
 #define EFI_OPEN_PROTOCOL_BY_DRIVER		0x00000010
 #define EFI_OPEN_PROTOCOL_EXCLUSIVE		0x00000020
 
+enum EfiAllocateType {
+    AllocateAnyPages,
+    AllocateMaxAddress,
+    AllocateAddress,
+    MaxAllocateType
+};
+
 enum EfiMemoryType {
     EfiReservedMemoryType,
     EfiLoaderCode,
@@ -98,6 +105,14 @@ struct EfiRuntimeServices {
     void (*ResetSystem)(EfiResetType ResetType, ull ResetStatus, ull DataSize, void *ResetData);
 };
 
+struct EfiMemoryDescriptor {
+    EfiMemoryType Type;
+    ull PhysicalStart;
+    ull VirtualStart;
+    ull NumberOfPages;
+    ull Attribute;
+};
+
 struct EfiBootServices {
     char _buf1[24];
 
@@ -105,7 +120,9 @@ struct EfiBootServices {
     ull _buf2[2];
     
     // Memory Services
-    ull _buf3[3];
+    ull (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, ull Pages, ull *PhysicalAddress);
+    ull (*FreePages) (ull PhysicalAddress, ull Pages);
+    ull (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, unsigned int *DescriptorVersion);
     ull (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
     ull (*FreePool)(void *Buffer);
 
