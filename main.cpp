@@ -1,15 +1,13 @@
 #include "common.hpp"
 #include "efi.hpp"
 #include "shell.hpp"
+#include "graphics.hpp"
 
 static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
 
-extern "C"
-void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
+void StartImage(void *ImageHandle){
 
     void *image;
-    efi_init(SystemTable);
-    ClearScreen();
     EfiLoadedImageProtocol *lip;
     EfiDevicePathProtocol *dev_path;
     EfiDevicePathProtocol *dev_node;
@@ -59,8 +57,43 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     assert(status , L"startimage");
     puts(L"startImage: Success!\r\n");
 
+}
+
+extern "C"
+void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
+
+    efi_init(SystemTable);
+    ClearScreen();
+
+    ull status;
+    EfiGraphicsOutputBitPixel *img_buf, *t;
+    unsigned int i,j;
+
+    status = ST->BootServices->AllocatePool(
+            EfiLoaderData,
+            256 * 256 * sizeof(EfiGraphicsOutputBitPixel),
+            (void **)&img_buf
+            );
+    assert(status, L"AllocatePool");
+
+    t = img_buf;
+    for(i = 0;i < 256;i++){
+        for(j = 0; j < 256;j++){
+            t->Blue = i;
+            t->Green = j;
+            t->Red = 0;
+            t->Reserved = 255;
+            t++;
+        }
+    }
+
+    blt((unsigned char *)img_buf, 256, 256);
+
+    status = ST->BootServices->FreePool((void *)img_buf);
+    assert(status, L"FreePool");
+
+
     // panic
     while(TRUE);
-    //shell();
 
 }
