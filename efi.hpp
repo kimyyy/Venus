@@ -152,7 +152,9 @@ struct EfiBootServices {
             void *ImageHandle,
             ull *ExitDataSize,
             unsigned short **ExitData);
-    ull _buf6[3];
+    ull (*Exit)(void *ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
+    ull (*UnloadImage)(void *ImageHandle);
+    ull (*ExitBootServices)(void *ImageHandle, ull MapKey);
 
     // Miscellaneous Services
     ull _buf7[2];

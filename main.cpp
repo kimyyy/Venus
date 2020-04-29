@@ -59,12 +59,7 @@ void StartImage(void *ImageHandle){
 
 }
 
-extern "C"
-void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
-
-    efi_init(SystemTable);
-    ClearScreen();
-
+void AllocateAndDraw(){
     ull status;
     EfiGraphicsOutputBitPixel *img_buf, *t;
     unsigned int i,j;
@@ -92,6 +87,13 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     status = ST->BootServices->FreePool((void *)img_buf);
     assert(status, L"FreePool");
 
+}
+
+extern "C"
+void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
+
+    efi_init(SystemTable);
+    ClearScreen();
 
     // panic
     while(TRUE);
