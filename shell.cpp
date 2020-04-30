@@ -56,6 +56,14 @@ void resolution(void){
     else puts(L"buf is too small!");
 }
 
+void frame(void){
+    resolution();
+    unsigned int hr = GOP->Mode->Info->HorizontalResolution;
+    unsigned int vr = GOP->Mode->Info->VerticalResolution;
+    Rect rect = {0, 0, hr, vr};
+    draw_rect(rect, white);
+}
+
 void cat(const wchar_t *file_name){
     ull status;
     EfiFileProtocol *root;
@@ -172,6 +180,8 @@ void shell(void){
             cat(L"abc");
         else if(!strcmp(L"edit", com))
             edit(L"abc");
+        else if(!strcmp(L"frame", com))
+            frame();
         else if(!strcmp(L"exit", com))
             break;
         else{

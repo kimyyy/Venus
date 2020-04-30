@@ -96,6 +96,5 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     ClearScreen();
 
     // panic
-    while(TRUE);
-
+    //while(TRUE);
 }

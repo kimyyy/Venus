@@ -239,10 +239,10 @@ struct EfiFileInfo {
 };
 
 struct EfiFileProtocol {
-    ull _buf;
+    ull Revision;
     ull (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, const wchar_t *FileName, ull OpenMode, ull Attributes);
     ull (*Close)(EfiFileProtocol *This);
-    ull _buf2;
+    ull (*Delete)();
     ull (*Read)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
     ull (*Write)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
     ull _buf3[4];
