@@ -1,10 +1,10 @@
 #include "common.hpp"
-#include "string.hpp"
+#include "cstring.hpp"
 
 
 // return: string length
 // WARN: do not input uninitialized string
-unsigned int strlen(wchar_t *s){
+unsigned int strlen(const wchar_t *s){
     unsigned int i = 0;
     while(s[i] != '\0'){
         i++;
@@ -63,7 +63,7 @@ unsigned int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_conten
 }
 
 unsigned int strcat(wchar_t *dst, const wchar_t *src){
-    unsigned int len = strlen(dst);    
+    unsigned int len = strlen((const wchar_t *)dst);    
     unsigned int i;
     for(i = 0; src[i] != '\0';i++){
         dst[i+len] = src[i];

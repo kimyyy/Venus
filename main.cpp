@@ -2,16 +2,10 @@
 #include "efi.hpp"
 #include "shell.hpp"
 #include "graphics.hpp"
-#include "string.hpp"
+#include "cstring.hpp"
+#include "memmanage.hpp"
 
-static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
-
-void panic(const wchar_t *message){
-    puts(message);
-    while(TRUE);
-}
-
-void * malloc(unsigned long size) {
+void *malloc(unsigned long size) {
     void * buf;
     ull status = ST->BootServices->AllocatePool(EfiLoaderData, size, &buf);
     assert(status,L"malloc");
@@ -22,6 +16,8 @@ void free(void* buf){
     ull status = ST->BootServices->FreePool(buf);
     assert(status, L"free");
 }
+
+static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
 
 void operator delete(void *p){
     free(p);
@@ -43,33 +39,61 @@ void *operator new[](unsigned long long size){
    return ptr;
 }
 
+class wstring {
+private:
+  wchar_t *m_data;
+  ull m_size;
+  ull m_capasity;
+  unsigned int capasity_offset = 30;
 
-class wString {
-    private:
-    wchar_t *m_data;
-    ull m_size;
-    ull m_capasity;
-    unsigned int capasity_offset = 30;
+public:
+  // Constructors
 
-    public:
-    wString(const ull size, const wchar_t *c){
-        m_size = size;
-        m_capasity = m_size + capasity_offset;
-        m_data = new wchar_t[m_capasity];
-        strncpy(m_data, c , m_size);
-    }
+  wstring(const ull size, const wchar_t *c) {
+    m_size = size;
+    m_capasity = m_size + capasity_offset;
+    m_data = new wchar_t[m_capasity];
+    strncpy(m_data, c, m_size);
+  }
 
-    wchar_t * data(){
-        return m_data;
-    }
+  wstring(const wchar_t *c) {
+    m_size = strlen(c);
+    m_capasity = m_size + capasity_offset;
+    m_data = new wchar_t[m_capasity];
+    strncpy(m_data, c, m_size);
+  }
 
-    ull size(){
-        return m_size;
-    }
+  wstring(const wstring &s){
+      m_capasity = s.m_capasity;
+      m_size = s.m_size;
+      m_data = new wchar_t[m_capasity];
+      strncpy(m_data, (const wchar_t *)s.m_data, m_size);
+  }
 
-    bool empty(){
-        return m_size == 0? true:false;
-    }
+  // Operators
+  wstring operator += (const wchar_t *c){
+      unsigned int len = strlen(c);
+      if(m_size + len > m_capasity){
+        
+      }else{
+        m_size = m_size + len;
+        strcat(m_data, c);
+        return *this;
+      }
+  }
+
+  wstring operator +(const wchar_t *c){
+      wstring str(*this);
+      str+= c;
+      return str;
+  }
+
+  // member functions
+  wchar_t *data() { return m_data; }
+
+  ull size() { return m_size; }
+
+  bool empty() { return m_size == 0 ? true : false; }
 };
 
 extern "C"
@@ -77,7 +101,8 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
     ClearScreen();
-    wString str = wString(3, L"Hello");
+    wstring str = wstring(3, L"Hello");
+    wstring str1 = L"world";
     puts(str.data());
 
     // panic

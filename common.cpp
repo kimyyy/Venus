@@ -1,7 +1,11 @@
-#include "efi.hpp"
 #include "common.hpp"
-#include "string.hpp"
+#include "efi.hpp"
+#include "cstring.hpp"
 
+void panic(const wchar_t *message){
+    puts(message);
+    while(TRUE);
+}
 
 void ClearScreen(void){
     ST->ConOut->ClearScreen(ST->ConOut);
