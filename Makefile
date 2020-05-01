@@ -8,7 +8,7 @@ QEMU := qemu-system-x86_64
 QEMU_FLAGS :=  -m 4G -gdb tcp::10000 -S -cpu qemu64
 
 SRC:= main.cpp efi.cpp common.cpp memmanage.cpp cstring.cpp shell.cpp graphics.cpp gui.cpp file.cpp
-SRC_TMP := main.cpp efi.cpp common.cpp cstring.cpp memmanage.cpp
+SRC_TMP := main.cpp efi.cpp common.cpp cstring.cpp memmanage.cpp wstring.cpp
 
 EFIPATH := fs/EFI/BOOT/BOOTX64.EFI
 EFI_ENTRY := efi_main
