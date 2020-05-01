@@ -7,8 +7,11 @@ OBJCP:= objcopy
 QEMU := qemu-system-x86_64
 QEMU_FLAGS :=  -m 4G -gdb tcp::10000 -S -cpu qemu64
 
+FSPATH := ./bin/fs
+EFIPATH := $(FSPATH)/EFI/BOOT
+
 INCLUDE = -I./include
-TARGET = $(EFIPATH)/$(EFINAME)
+TARGET = $(EFIPATH)/BOOTX64.EFI
 SRCDIR = ./src
 OBJDIR = ./obj
 
@@ -16,9 +19,6 @@ SRC:= $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(filter-out $(OBJDIR)/main.o, $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o))))
 DEPENDS = $(OBJECTS:.o=.d)
 
-FSPATH := ./bin/fs
-EFIPATH := $(FSPATH)/EFI/BOOT
-EFINAME :=BOOTX64.EFI
 EFI_ENTRY := -e efi_main
 
 all: clean $(TARGET)
@@ -45,7 +45,7 @@ run: $(TARGET)
 
 #--device qemu-xhci device usb-mouse -device usb-kbd 
 
-gdb: $(EFIPATH) $(SRC)
+gdb: $(TARGET) $(SRC)
 	gdb-multiarch -x start.gdb $(TARGET)
 
 clean:
