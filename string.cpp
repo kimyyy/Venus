@@ -62,10 +62,21 @@ unsigned int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_conten
     return 0;
 }
 
-void strncpy(wchar_t *dst, wchar_t *src, ull n){
+unsigned int strcat(wchar_t *dst, const wchar_t *src){
+    unsigned int len = strlen(dst);    
+    unsigned int i;
+    for(i = 0; src[i] != '\0';i++){
+        dst[i+len] = src[i];
+    }
+    dst[i] = '\0';
+    return i;
+}
+
+void strncpy(wchar_t *dst, const wchar_t *src, ull n){
     while(n--){
         *dst++ = *src++;
     }
+    *dst++ = '\0';
 }
 
 int strcmp(const wchar_t *s1, const wchar_t *s2){
