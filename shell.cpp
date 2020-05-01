@@ -4,6 +4,7 @@
 #include "shell.hpp"
 #include "graphics.hpp"
 #include "gui.hpp"
+#include "string.hpp"
 
 #define MAX_COMMAND_LEN 100
 

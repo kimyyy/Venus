@@ -20,6 +20,7 @@ void puth(ull val, unsigned char num_digits);
 wchar_t getc(void);
 unsigned int gets(wchar_t *buf, unsigned int buf_size);
 unsigned int strlen(wchar_t *s);
+void strcpy(const wchar_t * src, wchar_t * dst);
 unsigned int intToStr(wchar_t * buf, unsigned int buf_size, unsigned int buf_content_size, ull val);
 void strncpy(wchar_t *dst, wchar_t *src, ull n);
 unsigned int strcat(wchar_t *buf, unsigned int buf_size, unsigned int buf_content_size, const wchar_t *s);
