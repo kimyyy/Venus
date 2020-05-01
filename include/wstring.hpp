@@ -1,5 +1,5 @@
 #include "common.hpp"
-
+#include "cstring.hpp"
 
 class wstring {
     private:
@@ -7,6 +7,7 @@ class wstring {
         ull m_size;
         ull m_capasity;
         unsigned int capasity_offset = 30;
+
     public:
         // constructor
         wstring(const ull size, const wchar_t *c);

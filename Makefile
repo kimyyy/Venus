@@ -1,40 +1,54 @@
 .PHONY: clean run gdb
 
 CXX:= x86_64-w64-mingw32-g++
-CFLAGS := -m64 -Wall -Wextra -g3  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -fno-permissive
+CFLAGS := -m64 -Wall -Wextra -g3  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP
 FLAGS_NOEXCEPTION := -fno-exceptions -fno-unwind-tables
 OBJCP:= objcopy
 QEMU := qemu-system-x86_64
 QEMU_FLAGS :=  -m 4G -gdb tcp::10000 -S -cpu qemu64
 
-SRC:= main.cpp efi.cpp common.cpp memmanage.cpp cstring.cpp shell.cpp graphics.cpp gui.cpp file.cpp
-SRC_TMP := main.cpp efi.cpp common.cpp cstring.cpp memmanage.cpp wstring.cpp
+INCLUDE = -I./include
+TARGET = $(EFIPATH)/$(EFINAME)
+SRCDIR = ./src
+OBJDIR = ./obj
 
-EFIPATH := fs/EFI/BOOT/BOOTX64.EFI
-EFI_ENTRY := efi_main
+SRC:= $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(filter-out $(OBJDIR)/main.o, $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o))))
+DEPENDS = $(OBJECTS:.o=.d)
 
-all: $(EFIPATH)
+FSPATH := ./bin/fs
+EFIPATH := $(FSPATH)/EFI/BOOT
+EFINAME :=BOOTX64.EFI
+EFI_ENTRY := -e efi_main
 
-$(EFIPATH): main.o $(SRC)
+all: clean $(TARGET)
+
+$(TARGET): $(OBJDIR)/main.o
+	mkdir -p $(EFIPATH)
 	$(OBJCP) --target=efi-app-x86_64 $< $@
 
-main.o: $(SRC_TMP)
-	$(CXX) $(CFLAGS) $(FLAGS_NOEXCEPTION) -e $(EFI_ENTRY)  -o $@ $^
+$(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(OBJECTS) $(LIBS)
+	$(CXX) $(CFLAGS) $(INCLUDE) $(FLAGS_NOEXCEPTION) $(EFI_ENTRY)  -o $@ $^
 
-main.s: $(SRC)
-	$(CXX) -S -o main.s main.cpp
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) $(CFLAGS) $(INCLUDE) $(FLAGS_NOEXCEPTION) $< -c  -o $@
 
-run: $(EFIPATH) $(SRC)
+$(OBJDIR)/%.s: $(SRCDIR)/%.cpp
+	$(CXX) -S -o $@ $<
+
+run: $(TARGET)
 	$(QEMU) $(QEMU_FLAGS) \
 	-drive if=pflash,format=raw,readonly,file=$(HOME)/OVMF/OVMF_CODE.fd \
 	-drive if=pflash,format=raw,file=$(HOME)/OVMF/OVMF_VARS.fd \
-	-drive dir=fs,driver=vvfat,rw=on \
+	-drive dir=$(FSPATH),driver=vvfat,rw=on \
 	$(QEMU_ADDITIONAL_ARGS)
 
 #--device qemu-xhci device usb-mouse -device usb-kbd 
 
 gdb: $(EFIPATH) $(SRC)
-	gdb-multiarch -x start.gdb $(EFIPATH)
+	gdb-multiarch -x start.gdb $(TARGET)
 
 clean:
-	rm -rf *.o *.efi
+	rm -f $(OBJDIR)/main.o $(OBJECTS) $(DEPENDS) $(TARGET)
+
+-include $(DEPENDS)

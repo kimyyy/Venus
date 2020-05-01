@@ -2,3 +2,5 @@
 *.efi
 fs/*
 *.swp
+obj/*
+bin/*

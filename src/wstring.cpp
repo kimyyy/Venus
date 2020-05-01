@@ -1,5 +1,3 @@
-#include "common.hpp"
-#include "cstring.hpp"
 #include "wstring.hpp"
 
 // constructor
@@ -44,5 +42,7 @@ wstring wstring::operator +(const wchar_t *c){
 
 // function
 wchar_t * wstring::data() { return m_data; }
+
 ull wstring::size() { return m_size; }
+
 bool wstring::empty() { return m_size == 0 ? true : false; }
