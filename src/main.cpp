@@ -5,6 +5,7 @@
 #include "cstring.hpp"
 #include "memmanage.hpp"
 #include "wstring.hpp"
+#include "serial.hpp"
 
 static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
 
@@ -13,9 +14,7 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
     ClearScreen();
-    wstring str = wstring(3, L"Hello");
-    wstring str1 = L"world";
-    puts(str.data());
+    WriteIOPort8(0x03f8, 'A'); 
 
     // panic
     while(TRUE);
