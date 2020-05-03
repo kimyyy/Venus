@@ -1,37 +1,56 @@
-.PHONY: clean run gdb
+.PHONY: all clean run gdb
 
-CXX:= x86_64-w64-mingw32-g++
-CFLAGS := -m64 -Wall -Wextra -g3  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP
-FLAGS_NOEXCEPTION := -fno-exceptions -fno-unwind-tables
-OBJCP:= objcopy
-QEMU := qemu-system-x86_64
-QEMU_FLAGS :=  -m 4G -gdb tcp::10000 -S -cpu qemu64
-
-FSPATH := ./bin/fs
-EFIPATH := $(FSPATH)/EFI/BOOT
+# compiler choice
+CC_CLANG = clang
+CXX_CLANG = clang++-10
+CC_GCC = x86_64-w64-mingw32-gcc
+CXX_GCC = x86_64-w64-mingw32-g++ 
 
 INCLUDE = -I./include
+FLAGS_NOEXCEPTION = -fno-exceptions -fno-unwind-tables
+CFLAGS_WARN = -Wall -Wextra
+CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(INCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
+CFLAGS_LLVM = --target=x86_64-elf -g $(INCLUDE) $(FLAGS_NOEXCEPTION) -fno-stack-protector -mno-red-zone -nostdlibinc -Wall -Wpedantic
+
+CC = $(CC_GCC)
+CXX = $(CXX_GCC)
+CFLAGS = $(CFLAGS_GCC)
+
+# linker choice
+LD_GCC = x86_64-w64-mingw32-ld
+LD_LLVM = ld.lld-10
+
+EFI_ENTRY = -e efi_main
+LDFLAGS_GCC = --subsystem 10 -e efi_main
+LDFLAGS_LLVM = --entry KernelMain
+
+LD = $(LD_GCC)
+LDFLAGS = $(LDFLAGS_GCC)
+
+# directory and file
+FSPATH = ./bin/fs
+EFIPATH = $(FSPATH)/EFI/BOOT
 TARGET = $(EFIPATH)/BOOTX64.EFI
 SRCDIR = ./src
 OBJDIR = ./obj
 
-SRC:= $(wildcard $(SRCDIR)/*.cpp)
-OBJECTS = $(filter-out $(OBJDIR)/main.o, $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o))))
+SRC = $(wildcard $(SRCDIR)/*.cpp)
+OBJECTS = $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o)))
 DEPENDS = $(OBJECTS:.o=.d)
 
-EFI_ENTRY := -e efi_main
+# tools
+QEMU = qemu-system-x86_64
+QEMU_FLAGS =  -m 4G -gdb tcp::10000 -S -cpu qemu64
+DBG = gdb-multiarch
+DBG_FLAGS = -x start.gdb
 
 all: clean $(TARGET)
 
-$(TARGET): $(OBJDIR)/main.o
-	mkdir -p $(EFIPATH)
-	$(OBJCP) --target=efi-app-x86_64 $< $@
-
-$(OBJDIR)/main.o: $(SRCDIR)/main.cpp $(OBJECTS) $(LIBS)
-	$(CXX) $(CFLAGS) $(INCLUDE) $(FLAGS_NOEXCEPTION) $(EFI_ENTRY)  -o $@ $^
+$(TARGET): $(OBJECTS) $(LIBS)
+	$(LD) $(LDFLAGS) -o $@ $^
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) $(CFLAGS) $(INCLUDE) $(FLAGS_NOEXCEPTION) $< -c  -o $@
+	$(CXX) $(CFLAGS) -c $<  -o $@
 
 $(OBJDIR)/%.s: $(SRCDIR)/%.cpp
 	$(CXX) -S -o $@ $<
@@ -46,9 +65,9 @@ run: $(TARGET)
 #--device qemu-xhci device usb-mouse -device usb-kbd 
 
 gdb: $(TARGET) $(SRC)
-	gdb-multiarch -x start.gdb $(TARGET)
+	$(DBG) $(DBG_FLAGS) $(TARGET)
 
 clean:
-	rm -f $(OBJDIR)/main.o $(OBJECTS) $(DEPENDS) $(TARGET)
+	rm -f  $(OBJECTS) $(DEPENDS) $(TARGET)
 
 -include $(DEPENDS)

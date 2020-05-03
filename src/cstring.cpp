@@ -68,7 +68,7 @@ unsigned int strcat(wchar_t *dst, const wchar_t *src){
     for(i = 0; src[i] != '\0';i++){
         dst[i+len] = src[i];
     }
-    dst[i] = '\0';
+    dst[i+len] = '\0';
     return i;
 }
 
