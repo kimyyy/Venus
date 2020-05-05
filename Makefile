@@ -1,4 +1,4 @@
-.PHONY: all clean run gdb
+.PHONY: all clean run gdb mkd
 
 # compiler choice
 CC_CLANG = clang
@@ -44,7 +44,11 @@ QEMU_FLAGS =  -m 4G -gdb tcp::10000 -S -cpu qemu64
 DBG = gdb-multiarch
 DBG_FLAGS = -x start.gdb
 
-all: clean $(TARGET)
+all: clean mkd $(TARGET)
+
+mkd:
+	mkdir -p $(OBJDIR)
+	mkdir -p $(EFIPATH)
 
 $(TARGET): $(OBJECTS) $(LIBS)
 	$(LD) $(LDFLAGS) -o $@ $^
@@ -53,7 +57,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) $(CFLAGS) -c $<  -o $@
 
 $(OBJDIR)/%.s: $(SRCDIR)/%.cpp
-	$(CXX) -S -o $@ $<
+	$(CXX) $(CFLAGS) -S -o $@ $<
 
 run: $(TARGET)
 	$(QEMU) $(QEMU_FLAGS) \
