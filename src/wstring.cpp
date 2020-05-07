@@ -25,13 +25,18 @@ wstring::wstring(const wstring &s){
 // operator
 wstring wstring::operator += (const wchar_t *c){
     unsigned int len = strlen(c);
-    if(m_size + len > m_capasity){
-
-    }else{
-        m_size = m_size + len;
-        strcat(m_data, c);
-        return *this;
+    ull new_size = this->m_size + len;
+    if(new_size > m_capasity){
+        while(this->m_capasity < new_size)
+            this->m_capasity *= 2;
+        wchar_t *new_m_data = new wchar_t[this->m_capasity + 1];
+        strncpy(new_m_data, this->m_data, this->m_size);
+        delete this->m_data;
+        this->m_data = new_m_data;
     }
+    m_size = new_size;
+    strcat(this->m_data, c);
+    return *this;
 }
 
 wstring wstring::operator +(const wchar_t *c){
