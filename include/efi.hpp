@@ -2,12 +2,15 @@
 
 #pragma once
 
+// Open Modes
 #define EFI_FILE_MODE_READ 0x0000000000000001
 #define EFI_FILE_MODE_WRITE 0x0000000000000002
 #define EFI_FILE_MODE_CREATE 0x8000000000000000
 
+// File Attributes
 #define EFI_FILE_READ_ONLY 0x0000000000000001
 
+// EFI_STATUS
 #define EFI_SUCCESS	0
 #define EFI_ERROR	0x8000000000000000
 #define EFI_UNSUPPORTED	(EFI_ERROR | 3)
@@ -138,11 +141,10 @@ struct EfiBootServices {
     ull _buf4_2[3];
 
     // Protorcol Handler Services
-    //ull _buf5[9];
     ull (*InstallProtocolInterface)();
     ull (*ReintallProtocolInterface)();
     ull (*UninstallProtocolInterface)();
-    ull (*HandleProtocol)();
+    ull (*HandleProtocol)(void* Handle, EfiGuid *guid, void **Interface);
     void* Reserved;
     ull (*RegisterProtocolNotify)();
     ull (*LocateHandle)();
@@ -242,8 +244,29 @@ struct EfiSimplePointerProtocol{
     void *WaitForInput;
 };
 
+struct EfiTime {
+    unsigned short year;
+    unsigned char Month;
+    unsigned char Day;
+    unsigned char Hour;
+    unsigned char Minute;
+    unsigned char Second;
+    unsigned char Pad1;
+    unsigned long Nanosecond;
+    short Timezone;
+    unsigned char Daylight;
+    unsigned char Pad2;
+};
+
 struct EfiFileInfo {
-    unsigned char _buf[80];
+    //unsigned char _buf[80];
+    ull size;
+    ull FileSize;
+    ull PhysicalSize;
+    EfiTime CreateTime;
+    EfiTime LastAccessTime;
+    EfiTime ModificationTime;
+    ull Attribute;
     wchar_t FileName[];
 };
 
@@ -254,8 +277,12 @@ struct EfiFileProtocol {
     ull (*Delete)();
     ull (*Read)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
     ull (*Write)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
-    ull _buf3[4];
+    ull (*GetPosition)();
+    ull (*SetPosition)();
+    ull (*GetInfo)(EfiFileProtocol *This, EfiGuid *InformationType, ull *BufferSize, void *Buffer);
+    ull (*SetInfo)();
     ull (*Flush)(EfiFileProtocol *This);
+    // Extra functions (if revision 2)
 };
 
 struct EfiSimpleFileSystemProtocol {
@@ -317,6 +344,7 @@ extern EfiDevicePathFromTextProtocol *DPFTP;
 extern EfiDevicePathUtilitiesProtocol *DPUP;
 extern EfiGuid lip_guid;
 extern EfiGuid dpp_guid;
+extern EfiGuid sfsp_guid;
 
 void efi_init(EfiSystemTable *SystemTable);
 

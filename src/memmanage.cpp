@@ -5,13 +5,13 @@
 void *malloc(unsigned long size) {
     void * buf;
     ull status = ST->BootServices->AllocatePool(EfiLoaderData, size, &buf);
-    assert(status,L"malloc");
+    assert_status(status,L"malloc");
     return buf;
 }
 
 void free(void* buf){
     ull status = ST->BootServices->FreePool(buf);
-    assert(status, L"free");
+    assert_status(status, L"free");
 }
 
 // operator

@@ -21,4 +21,5 @@ void puth(ull val, unsigned char num_digits);
 wchar_t getc(void);
 unsigned int gets(wchar_t *buf, unsigned int buf_size);
 unsigned char check_warn_error(ull status, const wchar_t *name);
-void assert(ull status, const wchar_t *message);
+void assert_status(ull status, const wchar_t *message);
+void assert(bool condition);

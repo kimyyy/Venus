@@ -74,7 +74,7 @@ unsigned char check_warn_error(ull status, const wchar_t *message){
     return !status;
 }
 
-void assert(ull status, const wchar_t *message){
+void assert_status(ull status, const wchar_t *message){
     if(!check_warn_error(status, message))
         while(1);
 }

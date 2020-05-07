@@ -21,7 +21,7 @@ void StartImage(void *ImageHandle){
     // BOOTX64.EFI device path to string
     status = ST->BootServices->OpenProtocol(
             ImageHandle, &lip_guid, (void **)&lip, ImageHandle,NULL, EFI_OPEN_PROTOCOL_GET_PROTOCOL);
-    assert(status, L"OpenProtocol(lip)");
+    assert_status(status, L"OpenProtocol(lip)");
     puts(L"lip->FilePath: ");
     puts(DPTTP->ConvertDevicePathToText(lip->FilePath, FALSE, FALSE));
     puts(L"\r\n");
@@ -31,7 +31,7 @@ void StartImage(void *ImageHandle){
             lip->DeviceHandle, &dpp_guid, (void**)&dev_path, ImageHandle,
             NULL, EFI_OPEN_PROTOCOL_GET_PROTOCOL
             );
-    assert(status ,L"Openprotocol(dpp)");
+    assert_status(status ,L"Openprotocol(dpp)");
 
     // output dev_path
     puts(L"dev_path: ");
@@ -51,13 +51,13 @@ void StartImage(void *ImageHandle){
 
     // Load Image
     status = ST->BootServices->LoadImage(FALSE, ImageHandle, dev_path_merged, NULL, 0, &image);
-    assert(status ,L"LoadImage");
+    assert_status(status ,L"LoadImage");
     puts(L"LoadImage: Success!\r\n");
 
 
     // start image
     status = ST->BootServices->StartImage(image, (ull *)NULL, (unsigned short **)NULL);
-    assert(status , L"startimage");
+    assert_status(status , L"startimage");
     puts(L"startImage: Success!\r\n");
 
 }
@@ -72,7 +72,7 @@ void AllocateAndDraw(){
             256 * 256 * sizeof(EfiGraphicsOutputBitPixel),
             (void **)&img_buf
             );
-    assert(status, L"AllocatePool");
+    assert_status(status, L"AllocatePool");
 
     t = img_buf;
     for(i = 0;i < 256;i++){
@@ -88,7 +88,7 @@ void AllocateAndDraw(){
     blt((unsigned char *)img_buf, 256, 256);
 
     status = ST->BootServices->FreePool((void *)img_buf);
-    assert(status, L"FreePool");
+    assert_status(status, L"FreePool");
 
 }
 
@@ -103,12 +103,12 @@ int ls(void){
     int file_num;
     
     status = SFSP->OpenVolume(SFSP, &root);
-    assert(status, L"SFSP->OpenVolume");
+    assert_status(status, L"SFSP->OpenVolume");
 
     while(1) {
         buf_size = MAX_FILE_BUF;
         status = root->Read(root, &buf_size, (void *)file_buf);
-        assert(status, L"root->Read");
+        assert_status(status, L"root->Read");
         if(!buf_size)break;
         
         file_info = (EfiFileInfo *)file_buf;
@@ -157,13 +157,13 @@ void cat(const wchar_t *file_name){
     wchar_t file_buf[MAX_FILE_BUF / 2];
 
     status = SFSP->OpenVolume(SFSP, &root);
-    assert(status, L"SFSP->OpenVolume");
+    assert_status(status, L"SFSP->OpenVolume");
 
     status = root->Open(root, &file, file_name, EFI_FILE_MODE_READ, 0);
-    assert(status, L"root->Open");
+    assert_status(status, L"root->Open");
 
     status = file->Read(file, &buf_size, (void *)file_buf);
-    assert(status, L"file->Read");
+    assert_status(status, L"file->Read");
 
     puts(file_buf);
 
@@ -199,13 +199,13 @@ void edit(const wchar_t *file_name){
     file_buf[i] = L'\0';
 
     status = SFSP->OpenVolume(SFSP, &root);
-    assert(status, L"SFSP->OpenVolume");
+    assert_status(status, L"SFSP->OpenVolume");
 
     status = root->Open(root, &file, file_name, EFI_FILE_MODE_READ | EFI_FILE_MODE_WRITE, 0);
-    assert(status, L"root->Open");
+    assert_status(status, L"root->Open");
 
     status = file->Write(file, &buf_size, (void *)file_buf);
-    assert(status, L"file->Write");
+    assert_status(status, L"file->Write");
 
     file->Flush(file);
     file->Close(file);
