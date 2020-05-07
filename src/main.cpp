@@ -15,6 +15,7 @@ extern "C"
 void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
+    test_cstring();
     EfiLoadedImageProtocol* lip;
     EfiFileProtocol *root;
     EfiFileProtocol *kernelFile;

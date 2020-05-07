@@ -78,3 +78,9 @@ void assert_status(ull status, const wchar_t *message){
     if(!check_warn_error(status, message))
         while(1);
 }
+
+void assert(bool condition){
+    if(!condition){
+        panic(L"assert failed!");
+    }
+}

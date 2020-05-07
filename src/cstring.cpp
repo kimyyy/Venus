@@ -12,7 +12,7 @@ unsigned int strlen(const wchar_t *s){
     return i;
 }
 
-void strcpy(const wchar_t * src, wchar_t * dst){
+void strcpy(wchar_t * dst, const wchar_t * src){
     while(*src != '\0'){
         *dst++ = *src++;
     }
@@ -47,6 +47,10 @@ unsigned int intToStr(wchar_t * buf, unsigned int buf_size, unsigned int buf_con
     }
     buf[buf_content_size + j] = '\0';
     return buf_content_size + j;
+}
+
+int IntToStr(wchar_t *str, ull val){
+
 }
 
 
@@ -101,3 +105,15 @@ int strcmp(const wchar_t *s1, const wchar_t *s2){
     }
 }
 
+void test_cstring(){
+    const wchar_t str[] = L"Hello";
+    assert(strlen(str)==5);
+    wchar_t buf[100];
+    strncpy(buf, str, 4);
+    assert(!strcmp(str, L"Hello"));
+    assert(!strcmp(buf, L"Hell"));
+    strcat(buf, L"o");
+    assert(!strcmp(buf, L"Hello"));
+    strcpy(buf, L"world");
+    assert(!strcmp(buf, L"world"));
+};
