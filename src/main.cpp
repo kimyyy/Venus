@@ -14,7 +14,6 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
     ClearScreen();
-    WriteIOPort8(0x03f8, 'A'); 
 
     // panic
     while(TRUE);

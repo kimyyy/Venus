@@ -138,7 +138,16 @@ struct EfiBootServices {
     ull _buf4_2[3];
 
     // Protorcol Handler Services
-    ull _buf5[9];
+    //ull _buf5[9];
+    ull (*InstallProtocolInterface)();
+    ull (*ReintallProtocolInterface)();
+    ull (*UninstallProtocolInterface)();
+    ull (*HandleProtocol)();
+    void* Reserved;
+    ull (*RegisterProtocolNotify)();
+    ull (*LocateHandle)();
+    ull (*LocateDevicePath)();
+    ull (*InstallConfigurationTable)();
 
     // Image Services
     ull (*LoadImage)(
