@@ -1,8 +1,8 @@
 .PHONY: all clean run gdb mkd
 
 # compiler choice
-CC_CLANG = clang
-CXX_CLANG = clang++-10
+CC_LLVM = clang
+CXX_LLVM = clang++-10
 CC_GCC = x86_64-w64-mingw32-gcc
 CXX_GCC = x86_64-w64-mingw32-g++ 
 
@@ -10,11 +10,17 @@ INCLUDE = -I./include
 FLAGS_NOEXCEPTION = -fno-exceptions -fno-unwind-tables
 CFLAGS_WARN = -Wall -Wextra
 CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(INCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
-CFLAGS_LLVM = --target=x86_64-elf -g $(INCLUDE) $(FLAGS_NOEXCEPTION) -fno-stack-protector -mno-red-zone -nostdlibinc -Wall -Wpedantic
+CFLAGS_LLVM = --target=x86_64-elf -gdwarf $(INCLUDE) $(FLAGS_NOEXCEPTION) -fno-stack-protector -mno-red-zone -nostdlibinc -Wall -Wpedantic
 
+ifdef LLVM
+CC = $(CC_LLVM)
+CXX = $(CXX_LLVM)
+CFLAGS = $(CFLAGS_LLVM)
+else
 CC = $(CC_GCC)
 CXX = $(CXX_GCC)
 CFLAGS = $(CFLAGS_GCC)
+endif
 
 # linker choice
 LD_GCC = x86_64-w64-mingw32-ld
@@ -24,8 +30,13 @@ EFI_ENTRY = -e efi_main
 LDFLAGS_GCC = --subsystem 10 -e efi_main
 LDFLAGS_LLVM = --entry KernelMain
 
+ifdef LLVM
+LD = $(LD_LLVM)
+LDFLAGS = $(LDFLAGS_LLVM)
+else
 LD = $(LD_GCC)
 LDFLAGS = $(LDFLAGS_GCC)
+endif
 
 # directory and file
 FSPATH = ./bin/fs
