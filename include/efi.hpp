@@ -107,17 +107,23 @@ struct EfiRuntimeServices {
     char _buf_rs1[24];
 
     // Time Services
-    ull _buf_rs2[4];
+    EfiStatus GetTime();
+    EfiStatus SetTime();
+    EfiStatus GetWakeupTime();
+    EfiStatus SetWakeupTime();
 
     // Virtual Memory Services
-    ull _buf_rs3[2];
+    EfiStatus SetVirtualAddressMap();
+    EfiStatus ConvertPointer();
 
     // variable Services
-    ull _buf_rs4[3];
+    EfiStatus GetVariable();
+    EfiStatus GetNextVariableName();
+    EfiStatus SetVariable();
 
     // Miscellaneous Services
-    ull _buf_rs5;
-    void (*ResetSystem)(EfiResetType ResetType, ull ResetStatus, ull DataSize, void *ResetData);
+    EfiStatus GetNextHighMotonicCount();
+    void (*ResetSystem)(EfiResetType ResetType, EfiStatus ResetStatus, UINTN DataSize, void *ResetData);
 };
 
 struct EfiMemoryDescriptor {
@@ -332,17 +338,19 @@ struct EfiLoadedImageProtocol {
 };
 
 struct EfiDevicePathToTextProtocol {
-    ull _buf;
+    wchar_t *(*ConvertDeviceNodeToText)();
     wchar_t *(*ConvertDevicePathToText)(const EfiDevicePathProtocol *DeviceNode, uint8_t DisplayOnly, uint8_t AllowShortcuts);
 };
 
 struct EfiDevicePathFromTextProtocol {
-    ull _buf;
+    EfiDevicePathProtocol *(*ConvertTextToDeviceNode)();
     EfiDevicePathProtocol *(*ConvertTextToDevicePath) (const wchar_t *TextDevicePath);
 };
 
 struct EfiDevicePathUtilitiesProtocol {
-    ull _buf[3];
+    UINTN (*GetDevicePathSize)();
+    EfiDevicePathProtocol *(*DuplicateDevicePath)();
+    EfiDevicePathProtocol *(*AppendDevicePath)();
     EfiDevicePathProtocol *(*AppendDeviceNode)(const EfiDevicePathProtocol *DevicePath, EfiDevicePathProtocol *DeviceNode);
 };
 
