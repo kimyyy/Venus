@@ -1,8 +1,11 @@
 #pragma once
 
+#include <stdint.h>
+#include <stddef.h>
+
 typedef unsigned long long ull;
 
-#define NULL   (void *)0
+#define __NULL   (void *)0
 #define TRUE   1
 #define FALSE  0
 

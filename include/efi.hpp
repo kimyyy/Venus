@@ -1,8 +1,6 @@
-#include "common.hpp"
-#include <stdint.h>
-#include <stddef.h>
-
 #pragma once
+
+#include "common.hpp"
 
 typedef uint64_t UINTN;
 typedef int64_t INTN;
@@ -288,8 +286,7 @@ struct EfiTime {
 };
 
 struct EfiFileInfo {
-    //uint8_t _buf[80];
-    uint64_t size;
+    uint64_t FileInfoSize;
     uint64_t FileSize;
     uint64_t PhysicalSize;
     EfiTime CreateTime;
