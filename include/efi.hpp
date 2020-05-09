@@ -10,6 +10,10 @@ typedef int64_t INTN;
 typedef void* EfiHandle;
 typedef UINTN EfiStatus;
 
+typedef uint64_t EfiPhysicalAddress;
+typedef uint64_t EfiVirtualAddress;
+
+
 // Open Modes
 #define EFI_FILE_MODE_READ 0x0000000000000001
 #define EFI_FILE_MODE_WRITE 0x0000000000000002
@@ -87,15 +91,15 @@ struct EfiDevicePathProtocol {
 };
 
 struct EfiSimpleTextOutputProtocol {
-  ull _buf;
-  ull (*OutputString)(EfiSimpleTextOutputProtocol *This, const wchar_t *String);
-  ull _buf2[4];
-  ull (*ClearScreen)(EfiSimpleTextOutputProtocol *This);
+  EfiStatus _buf;
+  EfiStatus (*OutputString)(EfiSimpleTextOutputProtocol *This, const wchar_t *String);
+  EfiStatus _buf2[4];
+  EfiStatus (*ClearScreen)(EfiSimpleTextOutputProtocol *This);
 };
 
 struct EfiSimpleTextInputProtocol {
-  ull _buf;
-  ull (*ReadKeyStroke)(EfiSimpleTextInputProtocol *This, EfiInputKey *Key);
+  EfiStatus (*Reset)();
+  EfiStatus (*ReadKeyStroke)(EfiSimpleTextInputProtocol *This, EfiInputKey *Key);
   void *WaitForKey;
 };
 
@@ -118,10 +122,10 @@ struct EfiRuntimeServices {
 
 struct EfiMemoryDescriptor {
     EfiMemoryType Type;
-    ull PhysicalStart;
-    ull VirtualStart;
-    ull NumberOfPages;
-    ull Attribute;
+    EfiPhysicalAddress PhysicalStart;
+    EfiVirtualAddress VirtualStart;
+    uint64_t NumberOfPages;
+    uint64_t Attribute;
 };
 
 struct EfiBootServices {
@@ -131,10 +135,10 @@ struct EfiBootServices {
     EfiStatus _buf2[2];
     
     // Memory Services
-    EfiStatus (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, ull Pages, ull *PhysicalAddress);
-    EfiStatus (*FreePages) (ull PhysicalAddress, ull Pages);
-    EfiStatus (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, uint32_t *DescriptorVersion);
-    EfiStatus (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
+    EfiStatus (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, UINTN Pages, EfiPhysicalAddress *PhysicalAddress);
+    EfiStatus (*FreePages) (EfiPhysicalAddress PhysicalAddress, UINTN Pages);
+    EfiStatus (*GetMemoryMap)(UINTN *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, UINTN *MapKey, UINTN *DescriptorSize, uint32_t *DescriptorVersion);
+    EfiStatus (*AllocatePool)(EfiMemoryType PoolType, UINTN Size, void **Buffer);
     EfiStatus (*FreePool)(void *Buffer);
 
     // Event and Timer Services
@@ -260,7 +264,7 @@ struct EfiTime {
     uint8_t Minute;
     uint8_t Second;
     uint8_t Pad1;
-    unsigned long Nanosecond;
+    uint32_t Nanosecond;
     short Timezone;
     uint8_t Daylight;
     uint8_t Pad2;
@@ -268,52 +272,52 @@ struct EfiTime {
 
 struct EfiFileInfo {
     //uint8_t _buf[80];
-    ull size;
-    ull FileSize;
-    ull PhysicalSize;
+    uint64_t size;
+    uint64_t FileSize;
+    uint64_t PhysicalSize;
     EfiTime CreateTime;
     EfiTime LastAccessTime;
     EfiTime ModificationTime;
-    ull Attribute;
+    uint64_t Attribute;
     wchar_t FileName[];
 };
 
 struct EfiFileProtocol {
-    ull Revision;
-    ull (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, const wchar_t *FileName, ull OpenMode, ull Attributes);
-    ull (*Close)(EfiFileProtocol *This);
-    ull (*Delete)();
-    ull (*Read)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
-    ull (*Write)(EfiFileProtocol *This, ull *BufferSize, void *Buffer);
-    ull (*GetPosition)();
-    ull (*SetPosition)();
-    ull (*GetInfo)(EfiFileProtocol *This, EfiGuid *InformationType, ull *BufferSize, void *Buffer);
-    ull (*SetInfo)();
-    ull (*Flush)(EfiFileProtocol *This);
+    uint64_t Revision;
+    EfiStatus (*Open)(EfiFileProtocol *This, EfiFileProtocol **NewHandle, const wchar_t *FileName, uint64_t OpenMode, uint64_t Attributes);
+    EfiStatus (*Close)(EfiFileProtocol *This);
+    EfiStatus (*Delete)(EfiFileProtocol *This);
+    EfiStatus (*Read)(EfiFileProtocol *This, UINTN *BufferSize, void *Buffer);
+    EfiStatus (*Write)(EfiFileProtocol *This, UINTN *BufferSize, void *Buffer);
+    EfiStatus (*GetPosition)(EfiFileProtocol *This, uint64_t *Position);
+    EfiStatus (*SetPosition)(EfiFileProtocol *This, uint64_t Position);
+    EfiStatus (*GetInfo)(EfiFileProtocol *This, EfiGuid *InformationType, UINTN *BufferSize, void *Buffer);
+    EfiStatus (*SetInfo)(EfiFileProtocol *This, EfiGuid *InformationType, UINTN *BufferSize, void *Buffer);
+    EfiStatus (*Flush)(EfiFileProtocol *This);
     // Extra functions (if revision 2)
 };
 
 struct EfiSimpleFileSystemProtocol {
-    ull Revision;
-    ull (*OpenVolume)(EfiSimpleFileSystemProtocol *This, EfiFileProtocol **Root);
+    uint64_t Revision;
+    EfiStatus (*OpenVolume)(EfiSimpleFileSystemProtocol *This, EfiFileProtocol **Root);
 };
 
 struct EfiSystemTable {
     char _buf[44];
     EfiSimpleTextInputProtocol *ConIn;
-    ull _buf2;
+    uint64_t _buf2;
     EfiSimpleTextOutputProtocol *ConOut;
-    ull _buf3[2];
+    uint64_t _buf3[2];
     EfiRuntimeServices *RuntimeServices;
     EfiBootServices *BootServices;
 };
 
 struct EfiLoadedImageProtocol {
     uint32_t Revision;
-    void *ParentHandle;
+    EfiHandle ParentHandle;
     EfiSystemTable *SystemTable;
     // Source location of the image
-    void *DeviceHandle;
+    EfiHandle DeviceHandle;
     EfiDevicePathProtocol *FilePath;
     void *Reserved;
     // Image's load options
@@ -321,10 +325,10 @@ struct EfiLoadedImageProtocol {
     void *LoadOptions;
     // Location where image was loaded
     void *ImageBase;
-    ull ImageSize;
+    uint64_t ImageSize;
     EfiMemoryType ImageCodeType;
     EfiMemoryType ImageDataType;
-    ull (*Unload)(void *ImageHandle);
+    EfiStatus (*Unload)(void *ImageHandle);
 };
 
 struct EfiDevicePathToTextProtocol {
