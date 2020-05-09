@@ -1,4 +1,6 @@
 #include "common.hpp"
+#include <stdint.h>
+#include <stddef.h>
 
 #pragma once
 

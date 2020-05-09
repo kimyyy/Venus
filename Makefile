@@ -9,7 +9,7 @@ CXX_GCC = x86_64-w64-mingw32-g++
 INCLUDE = -I./include
 FLAGS_NOEXCEPTION = -fno-exceptions -fno-unwind-tables
 CFLAGS_WARN = -Wall -Wextra
-CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(INCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
+CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(INCLUDE) $(NEWLIB_INCLUDE) $(CXXINCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
 CFLAGS_LLVM = --target=x86_64-elf -gdwarf $(INCLUDE) $(FLAGS_NOEXCEPTION) -fno-stack-protector -mno-red-zone -nostdlibinc -Wall -Wpedantic
 
 ifdef LLVM
@@ -44,6 +44,9 @@ EFIPATH = $(FSPATH)/EFI/BOOT
 TARGET = $(EFIPATH)/BOOTX64.EFI
 SRCDIR = ./src
 OBJDIR = ./obj
+NEWLIBPATH = ./newlib
+NEWLIB_INCLUDE = -I$(NEWLIBPATH)/include
+CXXINCLUDE = -I../../tools/local/lib/gcc/x86_64-none-elf/9.3.0/include
 
 SRC = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(addprefix $(OBJDIR)/, $(notdir $(SRC:.cpp=.o)))

@@ -6,3 +6,4 @@ obj/*
 bin/*
 .clangd/*
 compile_commands.json
+newlib/*
