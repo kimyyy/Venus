@@ -74,16 +74,16 @@ struct EfiInputKey {
 };
 
 struct EfiGuid {
-    unsigned int Data1;
-    unsigned short Data2;
-    unsigned short Data3;
-    unsigned char Data4[8];
+    uint32_t Data1;
+    uint16_t Data2;
+    uint16_t Data3;
+    uint8_t Data4[8];
 };
 
 struct EfiDevicePathProtocol {
-    unsigned char Type;
-    unsigned char SubType;
-    unsigned char Length[2];
+    uint8_t Type;
+    uint8_t SubType;
+    uint8_t Length[2];
 };
 
 struct EfiSimpleTextOutputProtocol {
@@ -133,13 +133,13 @@ struct EfiBootServices {
     // Memory Services
     EfiStatus (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, ull Pages, ull *PhysicalAddress);
     EfiStatus (*FreePages) (ull PhysicalAddress, ull Pages);
-    EfiStatus (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, unsigned int *DescriptorVersion);
+    EfiStatus (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, uint32_t *DescriptorVersion);
     EfiStatus (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
     EfiStatus (*FreePool)(void *Buffer);
 
     // Event and Timer Services
     EfiStatus (*CreateEvent)(
-            unsigned int Type,
+            uint32_t Type,
             ull NotifyTpl,
             void (*NotifyFunction)(void *Event, void *Context),
             void *NotifyContext,
@@ -161,7 +161,7 @@ struct EfiBootServices {
 
     // Image Services
     EfiStatus (*LoadImage)(
-            unsigned char BootPolicy,
+            uint8_t BootPolicy,
             void *ParentImageHandle,
             EfiDevicePathProtocol *DevicePath,
             void *SourceBuffer,
@@ -170,7 +170,7 @@ struct EfiBootServices {
     EfiStatus (*StartImage)(
             void *ImageHandle,
             ull *ExitDataSize,
-            unsigned short **ExitData);
+            uint16_t **ExitData);
     EfiStatus (*Exit)(void *ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
     EfiStatus (*UnloadImage)(void *ImageHandle);
     EfiStatus (*ExitBootServices)(void *ImageHandle, ull MapKey);
@@ -189,7 +189,7 @@ struct EfiBootServices {
             void **Interface,
             void *AgentHandle,
             void *ControllerHandle,
-            unsigned int Attributes
+            uint32_t Attributes
             );
     EfiStatus _buf9[2];
 
@@ -206,16 +206,16 @@ struct EfiBootServices {
 };
 
 struct EfiGraphicsOutputBitPixel {
-    unsigned char Blue;
-    unsigned char Green;
-    unsigned char Red;
-    unsigned char Reserved;
+    uint8_t Blue;
+    uint8_t Green;
+    uint8_t Red;
+    uint8_t Reserved;
 };
 
 struct EfiGraphicsOutputModeInfo {
-    unsigned int Version;
-    unsigned int HorizontalResolution;
-    unsigned int VerticalResolution;
+    uint32_t Version;
+    uint32_t HorizontalResolution;
+    uint32_t VerticalResolution;
     enum EfiGraphicsPixelFormat {
         PixelRedGreenBlueReserved8BitPerColor,
         PixelBlueGreenRedReserved8BitPerColor,
@@ -226,8 +226,8 @@ struct EfiGraphicsOutputModeInfo {
 };
 
 struct EfiGraphicsOutputPtorocolMode {
-    unsigned int MaxMode;
-    unsigned int Mode;
+    uint32_t MaxMode;
+    uint32_t Mode;
     EfiGraphicsOutputModeInfo * Info;
     ull SizeOfInfo;
     ull FrameBufferBase;
@@ -239,35 +239,35 @@ struct EfiGraphicsOutputPtorocol {
 };
 
 struct EfiSimplePointerState{
-    int RelativeMovementX;
-    int RelativeMovementY;
-    int RelativeMovementZ;
-    unsigned char LeftButton;
-    unsigned char RightButton;
+    int32_t RelativeMovementX;
+    int32_t RelativeMovementY;
+    int32_t RelativeMovementZ;
+    uint8_t LeftButton;
+    uint8_t RightButton;
 };
 
 struct EfiSimplePointerProtocol{
-    ull (*Reset) (EfiSimplePointerProtocol *This, unsigned char ExtendedVerification);
+    ull (*Reset) (EfiSimplePointerProtocol *This, uint8_t ExtendedVerification);
     ull (*GetState) (EfiSimplePointerProtocol *This, EfiSimplePointerState *State);
     void *WaitForInput;
 };
 
 struct EfiTime {
-    unsigned short year;
-    unsigned char Month;
-    unsigned char Day;
-    unsigned char Hour;
-    unsigned char Minute;
-    unsigned char Second;
-    unsigned char Pad1;
+    uint16_t year;
+    uint8_t Month;
+    uint8_t Day;
+    uint8_t Hour;
+    uint8_t Minute;
+    uint8_t Second;
+    uint8_t Pad1;
     unsigned long Nanosecond;
     short Timezone;
-    unsigned char Daylight;
-    unsigned char Pad2;
+    uint8_t Daylight;
+    uint8_t Pad2;
 };
 
 struct EfiFileInfo {
-    //unsigned char _buf[80];
+    //uint8_t _buf[80];
     ull size;
     ull FileSize;
     ull PhysicalSize;
@@ -309,7 +309,7 @@ struct EfiSystemTable {
 };
 
 struct EfiLoadedImageProtocol {
-    unsigned int Revision;
+    uint32_t Revision;
     void *ParentHandle;
     EfiSystemTable *SystemTable;
     // Source location of the image
@@ -317,7 +317,7 @@ struct EfiLoadedImageProtocol {
     EfiDevicePathProtocol *FilePath;
     void *Reserved;
     // Image's load options
-    unsigned int LoadOptionSize;
+    uint32_t LoadOptionSize;
     void *LoadOptions;
     // Location where image was loaded
     void *ImageBase;
@@ -329,7 +329,7 @@ struct EfiLoadedImageProtocol {
 
 struct EfiDevicePathToTextProtocol {
     ull _buf;
-    wchar_t *(*ConvertDevicePathToText)(const EfiDevicePathProtocol *DeviceNode, unsigned char DisplayOnly, unsigned char AllowShortcuts);
+    wchar_t *(*ConvertDevicePathToText)(const EfiDevicePathProtocol *DeviceNode, uint8_t DisplayOnly, uint8_t AllowShortcuts);
 };
 
 struct EfiDevicePathFromTextProtocol {
