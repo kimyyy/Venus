@@ -72,6 +72,14 @@ enum EfiResetType {
     EfiResetPlatformSpecific
 };
 
+enum EfiGraphicsOutputBltOperation {
+    EfiBltVideoFill,
+    EfiBltVideoToBltBuffer,
+    EfiBltBufferToVideo,
+    EfiBltVideoToVideo,
+    EfiGraphicsOutputBltOperationMax
+};
+
 struct EfiInputKey {
   wchar_t ScanCode;
   wchar_t UnicodeChar;
@@ -239,12 +247,15 @@ struct EfiGraphicsOutputPtorocolMode {
     uint32_t MaxMode;
     uint32_t Mode;
     EfiGraphicsOutputModeInfo * Info;
-    ull SizeOfInfo;
-    ull FrameBufferBase;
+    UINTN SizeOfInfo;
+    EfiPhysicalAddress FrameBufferBase;
+    UINTN FrameBufferSize;
 };
 
 struct EfiGraphicsOutputPtorocol {
-    ull _buf[3];
+    EfiStatus QueryMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber, UINTN *SizeOfInfo, EfiGraphicsOutputModeInfo **Info);
+    EfiStatus SetMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber);
+    EfiStatus Blt(EfiGraphicsOutputPtorocol *This, EfiGraphicsOutputBitPixel *BltBuffer, EfiGraphicsOutputBltOperation BltOperation, UINTN SrcX, UINTN SrcY, UINTN DstX, UINTN DstY, UINTN Width, UINTN Height, UINTN Delta);
     EfiGraphicsOutputPtorocolMode *Mode;
 };
 
