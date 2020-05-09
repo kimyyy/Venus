@@ -4,6 +4,12 @@
 
 #pragma once
 
+typedef uint64_t UINTN;
+typedef int64_t INTN;
+
+typedef void* EfiHandle;
+typedef UINTN EfiStatus;
+
 // Open Modes
 #define EFI_FILE_MODE_READ 0x0000000000000001
 #define EFI_FILE_MODE_WRITE 0x0000000000000002
@@ -122,62 +128,62 @@ struct EfiBootServices {
     char _buf1[24];
 
     // Task Priority Services
-    ull _buf2[2];
+    EfiStatus _buf2[2];
     
     // Memory Services
-    ull (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, ull Pages, ull *PhysicalAddress);
-    ull (*FreePages) (ull PhysicalAddress, ull Pages);
-    ull (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, unsigned int *DescriptorVersion);
-    ull (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
-    ull (*FreePool)(void *Buffer);
+    EfiStatus (*AllocatePages)(EfiAllocateType Type, EfiMemoryType MemoryType, ull Pages, ull *PhysicalAddress);
+    EfiStatus (*FreePages) (ull PhysicalAddress, ull Pages);
+    EfiStatus (*GetMemoryMap)(ull *MemoryMapsize, EfiMemoryDescriptor *MemoryMap, ull *MapKey, ull *DescriptorSize, unsigned int *DescriptorVersion);
+    EfiStatus (*AllocatePool)(EfiMemoryType PoolType, ull Size, void **Buffer);
+    EfiStatus (*FreePool)(void *Buffer);
 
     // Event and Timer Services
-    ull (*CreateEvent)(
+    EfiStatus (*CreateEvent)(
             unsigned int Type,
             ull NotifyTpl,
             void (*NotifyFunction)(void *Event, void *Context),
             void *NotifyContext,
             void *Event);
-    ull (*SetTimer)(void *Event, EfiTimerDelay Type, ull TriggerTime);
-    ull (*WaitForEvent) (ull NumberOfEvents, void **Event, ull *Index);
-    ull _buf4_2[3];
+    EfiStatus (*SetTimer)(void *Event, EfiTimerDelay Type, ull TriggerTime);
+    EfiStatus (*WaitForEvent) (ull NumberOfEvents, void **Event, ull *Index);
+    EfiStatus _buf4_2[3];
 
     // Protorcol Handler Services
-    ull (*InstallProtocolInterface)();
-    ull (*ReintallProtocolInterface)();
-    ull (*UninstallProtocolInterface)();
-    ull (*HandleProtocol)(void* Handle, EfiGuid *guid, void **Interface);
+    EfiStatus (*InstallProtocolInterface)();
+    EfiStatus (*ReintallProtocolInterface)();
+    EfiStatus (*UninstallProtocolInterface)();
+    EfiStatus (*HandleProtocol)(void* Handle, EfiGuid *guid, void **Interface);
     void* Reserved;
-    ull (*RegisterProtocolNotify)();
-    ull (*LocateHandle)();
-    ull (*LocateDevicePath)();
-    ull (*InstallConfigurationTable)();
+    EfiStatus (*RegisterProtocolNotify)();
+    EfiStatus (*LocateHandle)();
+    EfiStatus (*LocateDevicePath)();
+    EfiStatus (*InstallConfigurationTable)();
 
     // Image Services
-    ull (*LoadImage)(
+    EfiStatus (*LoadImage)(
             unsigned char BootPolicy,
             void *ParentImageHandle,
             EfiDevicePathProtocol *DevicePath,
             void *SourceBuffer,
             ull SourceSize,
             void **ImageHandle);
-    ull (*StartImage)(
+    EfiStatus (*StartImage)(
             void *ImageHandle,
             ull *ExitDataSize,
             unsigned short **ExitData);
-    ull (*Exit)(void *ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
-    ull (*UnloadImage)(void *ImageHandle);
-    ull (*ExitBootServices)(void *ImageHandle, ull MapKey);
+    EfiStatus (*Exit)(void *ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
+    EfiStatus (*UnloadImage)(void *ImageHandle);
+    EfiStatus (*ExitBootServices)(void *ImageHandle, ull MapKey);
 
     // Miscellaneous Services
-    ull _buf7[2];
-    ull (*SetWatchdogTimer) (ull Timeout, ull WatchdogCode, ull DataSize, wchar_t *WatchdogData);
+    EfiStatus _buf7[2];
+    EfiStatus (*SetWatchdogTimer) (ull Timeout, ull WatchdogCode, ull DataSize, wchar_t *WatchdogData);
 
     // DriverSupport Services
-    ull _buf8[2];
+    EfiStatus _buf8[2];
 
     // Open and Close Protocol Services
-    ull (*OpenProtocol) (
+    EfiStatus (*OpenProtocol) (
             void *Handle,
             EfiGuid *Protocol,
             void **Interface,
@@ -185,18 +191,18 @@ struct EfiBootServices {
             void *ControllerHandle,
             unsigned int Attributes
             );
-    ull _buf9[2];
+    EfiStatus _buf9[2];
 
     // Library Services
-    ull _buf10[2];
-    ull (*LocateProtocol) (EfiGuid *Protocol, void *Registration, void **Interface);
-    ull _buf10_2[2];
+    EfiStatus _buf10[2];
+    EfiStatus (*LocateProtocol) (EfiGuid *Protocol, void *Registration, void **Interface);
+    EfiStatus _buf10_2[2];
 
     // 32-bit CRC Servies
-    ull _buf11;
+    EfiStatus _buf11;
 
     // Miscellaneous Services
-    ull _buf12[3];
+    EfiStatus _buf12[3];
 };
 
 struct EfiGraphicsOutputBitPixel {
