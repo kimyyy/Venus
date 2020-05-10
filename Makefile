@@ -1,4 +1,4 @@
-.PHONY: all clean run gdb mkd
+.PHONY: all clean run gdb mkd gdb_k
 
 # compiler choice
 CC_LLVM = clang
@@ -39,9 +39,11 @@ LDFLAGS = $(LDFLAGS_GCC)
 endif
 
 # directory and file
-FSPATH = ./bin/fs
+BINPATH = ./bin
+FSPATH = $(BINPATH)/fs
 EFIPATH = $(FSPATH)/EFI/BOOT
 TARGET = $(EFIPATH)/BOOTX64.EFI
+KERNEL = $(FSPATH)/kernel.elf
 SRCDIR = ./src
 OBJDIR = ./obj
 NEWLIBPATH = ./newlib
@@ -54,9 +56,11 @@ DEPENDS = $(OBJECTS:.o=.d)
 
 # tools
 QEMU = qemu-system-x86_64
-QEMU_FLAGS =  -m 4G -gdb tcp::10000 -S -cpu qemu64
+QEMU_FLAGS =  -m 4G -gdb tcp::10000 -cpu qemu64
+QEMU_DBG_FLAG = -S
 DBG = gdb-multiarch
 DBG_FLAGS = -x start.gdb
+DBG_FLAGS_KERNEL = -x kernel.gdb
 
 all: clean mkd $(TARGET)
 
@@ -84,6 +88,9 @@ run: $(TARGET)
 
 gdb: $(TARGET) $(SRC)
 	$(DBG) $(DBG_FLAGS) $(TARGET)
+
+gdb_k:
+	$(DBG) $(DBG_FLAGS_KERNEL) $(KERNEL)
 
 clean:
 	rm -f  $(OBJECTS) $(DEPENDS) $(TARGET)
