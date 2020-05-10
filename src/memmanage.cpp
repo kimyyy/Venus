@@ -1,6 +1,30 @@
 #include "memmanage.hpp"
 #include "efi.hpp"
 
+// memory operation
+
+// memory copy for n bytes
+void memcpy(char *dst, const char *src, uint32_t n){
+    while(n--){
+        *dst++ = *src++;
+    }
+}
+
+// memory zero for n bytes
+void memzero(char *dst, uint32_t n){
+    while(n--){
+        *dst++ = 0;
+    }
+}
+
+// testing
+void mem_test(){
+    char src[] = "testing";
+    char buf[10];
+    memcpy(buf, src, 4);
+    memzero(buf, 4);
+}
+
 // allocation and free
 void *malloc(unsigned long size) {
     void * buf;

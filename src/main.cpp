@@ -13,10 +13,9 @@ static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
 EfiGuid EfiFileInfoGuid = {0x09576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}};
 
 extern "C"
-void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
+int efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     efi_init(SystemTable);
-    test_cstring();
     EfiLoadedImageProtocol* lip;
     EfiFileProtocol *root;
     EfiFileProtocol *kernelFile;
@@ -59,6 +58,12 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     status = kernelFile->Read(kernelFile, &kernelElfBufsize, (void*)kernelElfBuf);
     assert_status(status, L"ReadKernelElf");
     elfHeader = reinterpret_cast<Elf64_Ehdr*>(kernelElfBuf);
+    puts(L"Elf Header: ");
+    puts(L" e_phoff: ");
+    puth(elfHeader->e_phoff, 8);
+    puts(L" e_ehsize: ");
+    puth(elfHeader->e_ehsize, 8);
+    puts(L"\r\n");
     for(int i = 0; i < elfHeader->e_phnum;i++){
         elfPhdr = reinterpret_cast<Elf64_Phdr*>(kernelElfBuf + elfHeader->e_phoff + elfHeader->e_phentsize * i);
         puts(L"Program Header: ");
@@ -79,5 +84,6 @@ void efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     //ClearScreen();
 
     // panic
-    while(TRUE);
+    //while(TRUE);
+   return 0;
 }
