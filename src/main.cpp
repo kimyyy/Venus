@@ -20,7 +20,7 @@ int efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     EfiFileProtocol *root;
     EfiFileProtocol *kernelFile;
 
-    EfiPhysicalAddress kernelElfBuf;
+    EfiPhysicalAddress kernelElfBuf = 0x100000000;
     uint64_t kernelElfBufsize;
 
     char kernelFileInfoBuf[200];
@@ -52,7 +52,7 @@ int efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
 
     uint64_t page_size = (kernelFileInfo->FileSize + EfiPageSize - 1) /EfiPageSize;
     kernelElfBufsize = page_size * EfiPageSize;
-    status = ST->BootServices->AllocatePages(AllocateAnyPages, EfiLoaderData, page_size, (UINTN*)&kernelElfBuf);
+    status = ST->BootServices->AllocatePages(AllocateMaxAddress, EfiLoaderData, page_size, (UINTN*)&kernelElfBuf);
     assert_status(status, L"AllocatePageForKernelElfBuf");
 
     status = kernelFile->Read(kernelFile, &kernelElfBufsize, (void*)kernelElfBuf);
@@ -64,26 +64,42 @@ int efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
     puts(L" e_ehsize: ");
     puth(elfHeader->e_ehsize, 8);
     puts(L"\r\n");
+    elfPhdr = reinterpret_cast<Elf64_Phdr*>(kernelElfBuf + elfHeader->e_phoff);
     for(int i = 0; i < elfHeader->e_phnum;i++){
-        elfPhdr = reinterpret_cast<Elf64_Phdr*>(kernelElfBuf + elfHeader->e_phoff + elfHeader->e_phentsize * i);
         puts(L"Program Header: ");
         puth(i, 1);
         puts(L"\r\n");
         puts(L"p_type: ");
-        puth(elfPhdr->p_type, 2);
+        puth(elfPhdr[i].p_type, 2);
         puts(L" p_offset: ");
-        puth(elfPhdr->p_offset, 8);
+        puth(elfPhdr[i].p_offset, 8);
         puts(L" p_vaddr: ");
-        puth(elfPhdr->p_vaddr, 8);
+        puth(elfPhdr[i].p_vaddr, 8);
         puts(L" p_filesz: ");
-        puth(elfPhdr->p_filesz, 8);
+        puth(elfPhdr[i].p_filesz, 8);
         puts(L" p_memsz: ");
-        puth(elfPhdr->p_memsz, 8);
+        puth(elfPhdr[i].p_memsz, 8);
         puts(L"\r\n");
+
+        if(elfPhdr[i].p_type != PT_LOAD)continue;
+        puts(L"copy from: ");
+        puth(kernelElfBuf + elfPhdr[i].p_offset, 16);
+        puts(L" to: ");
+        puth(elfPhdr[i].p_paddr, 16);
+        puts(L" for :");
+        puth(elfPhdr[i].p_filesz, 8);
+        puts(L" bytes \r\n");
+        memcpy(reinterpret_cast<char*>(elfPhdr[i].p_vaddr), reinterpret_cast<char*>(kernelElfBuf + elfPhdr[i].p_offset), elfPhdr[i].p_filesz);
+        puts(L"zeromem ");
+        puth(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz, 16);
+        puts(L" for: ");
+        puth(elfPhdr[i].p_memsz - elfPhdr[i].p_filesz, 8);
+        puts(L" bytes \r\n");
+        memzero(reinterpret_cast<char*>(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz), elfPhdr[i].p_memsz - elfPhdr[i].p_filesz);
     }
     //ClearScreen();
 
     // panic
-    //while(TRUE);
-   return 0;
+    while(TRUE);
+    return 0;
 }
