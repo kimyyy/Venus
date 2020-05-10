@@ -97,7 +97,11 @@ int efi_main(void *ImageHandle , EfiSystemTable *SystemTable){
         puts(L" bytes \r\n");
         memzero(reinterpret_cast<char*>(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz), elfPhdr[i].p_memsz - elfPhdr[i].p_filesz);
     }
-    //ClearScreen();
+
+    ClearScreen();
+    typedef void EntryPoint();
+    EntryPoint *entry_point = reinterpret_cast<EntryPoint *>(elfHeader->e_entry);
+    entry_point();
 
     // panic
     while(TRUE);
