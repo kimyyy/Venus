@@ -8,8 +8,9 @@ CXX_LOADER_GCC = x86_64-w64-mingw32-g++
 CC_KERNEL_GCC = x86_64-none-elf-gcc
 CXX_KERNEL_GCC = x86_64-none-elf-g++
 
-INCLUDE_LOADER = -I./include/loader
-INCLUDE_KERNEL = -I./include/kernel
+INCLUDE_COMMON = -I./include/common
+INCLUDE_LOADER = -I./include/loader $(INCLUDE_COMMON)
+INCLUDE_KERNEL = -I./include/kernel $(INCLUDE_COMMON)
 FLAGS_NOEXCEPTION = -fno-exceptions -fno-unwind-tables
 CFLAGS_WARN = -Wall -Wextra
 CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(NEWLIB_INCLUDE) $(CXXINCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
@@ -65,15 +66,16 @@ SRCDIR_COMMON = $(SRCDIR)/common
 OBJDIR = ./obj
 OBJDIR_LOADER = $(OBJDIR)/loader
 OBJDIR_KERNEL = $(OBJDIR)/kernel
-OBJDIRS = $(OBJDIR_LOADER) $(OBJDIR_KERNEL)
+OBJDIR_COMMON = $(OBJDIR)/common
+OBJDIRS = $(OBJDIR_LOADER) $(OBJDIR_KERNEL) $(OBJDIR_COMMON)
 
 # files
 SRC_LOADER = $(wildcard $(SRCDIR_LOADER)/*.cpp)
 SRC_KERNEL = $(wildcard $(SRCDIR_KERNEL)/*.cpp)
 SRC_COMMON = $(wildcard $(SRCDIR_COMMON)/*.cpp)
 OBJECTS = $(OBJECTS_KERNEL) $(OBJECTS_LOADER)
-OBJECTS_LOADER = $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_LOADER:.cpp=.o))) $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_COMMON:.cpp=.o)))
-OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o))) $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_COMMON:.cpp=.o)))
+OBJECTS_LOADER = $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_LOADER:.cpp=.o))) $(addprefix $(OBJDIR_COMMON)/, $(notdir $(SRC_COMMON:.cpp=.loader.o)))
+OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o))) $(addprefix $(OBJDIR_COMMON)/, $(notdir $(SRC_COMMON:.cpp=.kernel.o)))
 DEPENDS = $(DEPENDS_KERNEL) $(DEPENDS_LOADER)
 DEPENDS_LOADER = $(OBJECTS_LOADER:.o=.d)
 DEPENDS_KERNEL = $(OBJECTS_KERNEL:.o=.d)
@@ -98,7 +100,6 @@ DBG_FLAGS = -x start.gdb
 DBG_FLAGS_KERNEL = -x kernel.gdb
 
 
-
 # start recipe
 all: clean mkd $(TARGET)
 
@@ -114,6 +115,9 @@ $(LOADER): $(OBJECTS_LOADER) $(LIBS)
 $(OBJDIR_LOADER)/%.o: $(SRCDIR_LOADER)/%.cpp
 	$(CXX_LOADER) $(CFLAGS_LOADER) -c $<  -o $@
 
+$(OBJDIR_COMMON)/%.loader.o: $(SRCDIR_COMMON)/%.cpp
+	$(CXX_LOADER) $(CFLAGS_LOADER) -c $< -o $@
+
 $(OBJDIR_LOADER)/%.s: $(SRCDIR_LOADER)/%.cpp
 	$(CXX_LOADER) $(CFLAGS_LOADER) -S -o $@ $<
 
@@ -124,6 +128,9 @@ $(KERNEL): $(OBJECTS_KERNEL)
 	$(LD_KERNEL) $(LDFLAGS_KERNEL) -o $@ $^
 
 $(OBJDIR_KERNEL)/%.o : $(SRCDIR_KERNEL)/%.cpp
+	$(CXX_KERNEL) $(CFLAGS_KERNEL) -c $< -o $@
+
+$(OBJDIR_COMMON)/%.kernel.o: $(SRCDIR_COMMON)/%.cpp
 	$(CXX_KERNEL) $(CFLAGS_KERNEL) -c $< -o $@
 
 $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
