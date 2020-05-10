@@ -61,6 +61,7 @@ EFIPATH = $(FSPATH)/EFI/BOOT
 SRCDIR = ./src
 SRCDIR_LOADER = $(SRCDIR)/loader
 SRCDIR_KERNEL = $(SRCDIR)/kernel
+SRCDIR_COMMON = $(SRCDIR)/common
 OBJDIR = ./obj
 OBJDIR_LOADER = $(OBJDIR)/loader
 OBJDIR_KERNEL = $(OBJDIR)/kernel
@@ -69,9 +70,10 @@ OBJDIRS = $(OBJDIR_LOADER) $(OBJDIR_KERNEL)
 # files
 SRC_LOADER = $(wildcard $(SRCDIR_LOADER)/*.cpp)
 SRC_KERNEL = $(wildcard $(SRCDIR_KERNEL)/*.cpp)
+SRC_COMMON = $(wildcard $(SRCDIR_COMMON)/*.cpp)
 OBJECTS = $(OBJECTS_KERNEL) $(OBJECTS_LOADER)
-OBJECTS_LOADER = $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_LOADER:.cpp=.o)))
-OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o)))
+OBJECTS_LOADER = $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_LOADER:.cpp=.o))) $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_COMMON:.cpp=.o)))
+OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o))) $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_COMMON:.cpp=.o)))
 DEPENDS = $(DEPENDS_KERNEL) $(DEPENDS_LOADER)
 DEPENDS_LOADER = $(OBJECTS_LOADER:.o=.d)
 DEPENDS_KERNEL = $(OBJECTS_KERNEL:.o=.d)
