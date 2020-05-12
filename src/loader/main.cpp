@@ -106,7 +106,20 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
         memzero(reinterpret_cast<char*>(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz), elfPhdr[i].p_memsz - elfPhdr[i].p_filesz);
     }
 
+    // get memory map
+    UINTN memorymap_size = 4096;
+    EfiMemoryDescriptor *memorymap = (EfiMemoryDescriptor*)malloc(memorymap_size);
+    UINTN mapkey;
+    UINTN descriptorsize;
+    status = ST->BootServices->GetMemoryMap(&memorymap_size, memorymap, &mapkey, &descriptorsize, NULL);
+    assert_status(status,L"getmemorymap");
+
     ClearScreen();
+
+    // exit boot services
+    status = ST->BootServices->ExitBootServices(ImageHandle, mapkey);
+    assert_status(status, L"ExitBOotServices");
+
     typedef void EntryPoint();
     EntryPoint *entry_point = reinterpret_cast<EntryPoint *>(elfHeader->e_entry);
     entry_point();

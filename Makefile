@@ -94,6 +94,7 @@ CXXINCLUDE = -I../../tools/local/lib/gcc/x86_64-none-elf/9.3.0/include
 # tools
 QEMU = qemu-system-x86_64
 QEMU_FLAGS =  -m 4G -gdb tcp::10000 -cpu qemu64
+QEMU_ADDITIONAL_ARGS = -nographic
 QEMU_DBG_FLAG = -S
 DBG = gdb-multiarch
 DBG_FLAGS = -x start.gdb
