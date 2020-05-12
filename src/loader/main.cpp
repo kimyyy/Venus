@@ -6,6 +6,7 @@
 #include "memmanage.hpp"
 #include "wstring.hpp"
 #include "serial.hpp"
+#include "bootInfo.hpp"
 #include <elf.h>
 
 static_assert(sizeof(EfiSystemTable) == 104, "invalid size of SystemTable");
@@ -24,6 +25,11 @@ EfiFileProtocol *openRootFile(EfiHandle ImageHandle){
     status = SFSP->OpenVolume(SFSP, &root);
     assert_status(status, L"getroot");
     return root;
+}
+
+void jumpToKernel(void *entry_point, BootInfo* info){
+    asm volatile("mov %%rdx, %%rdi":: "d" (info));
+    asm volatile("call %%rcx":: "c" (entry_point));
 }
 
 extern "C"
@@ -120,9 +126,8 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     status = ST->BootServices->ExitBootServices(ImageHandle, mapkey);
     assert_status(status, L"ExitBOotServices");
 
-    typedef void EntryPoint();
-    EntryPoint *entry_point = reinterpret_cast<EntryPoint *>(elfHeader->e_entry);
-    entry_point();
+    BootInfo bi = {6};
+    jumpToKernel((void*)elfHeader->e_entry, &bi);
 
     // panic
     while(TRUE);

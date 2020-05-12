@@ -135,7 +135,7 @@ $(OBJDIR_COMMON)/%.kernel.o: $(SRCDIR_COMMON)/%.cpp
 	$(CXX_KERNEL) $(CFLAGS_KERNEL) -c $< -o $@
 
 $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
-	$(CXX_KERNEL) $(CFLAGS_KERNEL) -s -o $@ $<
+	$(CXX_KERNEL) $(CFLAGS_KERNEL) -S -o $@ $<
 
 
 
@@ -150,9 +150,9 @@ run: $(TARGET)
 #--device qemu-xhci device usb-mouse -device usb-kbd 
 
 gdb: $(TARGET) $(SRC)
-	$(DBG) $(DBG_FLAGS) $(TARGET)
+	$(DBG) $(DBG_FLAGS) $(LOADER)
 
-gdb_k:
+gdb_k: $(TARGET)
 	$(DBG) $(DBG_FLAGS_KERNEL) $(KERNEL)
 
 
