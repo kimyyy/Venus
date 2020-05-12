@@ -187,9 +187,9 @@ struct EfiBootServices {
             void *ImageHandle,
             ull *ExitDataSize,
             uint16_t **ExitData);
-    EfiStatus (*Exit)(void *ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
-    EfiStatus (*UnloadImage)(void *ImageHandle);
-    EfiStatus (*ExitBootServices)(void *ImageHandle, ull MapKey);
+    EfiStatus (*Exit)(EfiHandle ImageHandle, ull ExitStatus, ull ExitDataSize, wchar_t *ExitData);;
+    EfiStatus (*UnloadImage)(EfiHandle ImageHandle);
+    EfiStatus (*ExitBootServices)(EfiHandle ImageHandle, UINTN MapKey);
 
     // Miscellaneous Services
     EfiStatus _buf7[2];

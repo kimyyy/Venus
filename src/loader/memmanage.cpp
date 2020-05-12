@@ -26,7 +26,7 @@ void mem_test(){
 }
 
 // allocation and free
-void *malloc(unsigned long size) {
+void *malloc(UINTN size) {
     void * buf;
     ull status = ST->BootServices->AllocatePool(EfiLoaderData, size, &buf);
     assert_status(status,L"malloc");
