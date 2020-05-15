@@ -86,15 +86,16 @@ KERNEL = $(FSPATH)/kernel.elf
 
 TARGET = $(LOADER) $(KERNEL)
 
-# thirdparty
+# include thirdparty
 NEWLIBPATH = ./newlib
 NEWLIB_INCLUDE = -I$(NEWLIBPATH)/include
-CXXINCLUDE = -I../../tools/local/lib/gcc/x86_64-none-elf/9.3.0/include
+CXXLIBPATH = $(HOME)/projects/os-project/tools/local/lib/gcc/x86_64-none-elf/9.3.0/include
+CXXINCLUDE = -I$(CXXLIBPATH)
 
 # tools
 QEMU = qemu-system-x86_64
 QEMU_FLAGS =  -m 4G -gdb tcp::10000 -cpu qemu64
-QEMU_ADDITIONAL_ARGS = -nographic
+#QEMU_ADDITIONAL_ARGS = -nographic
 QEMU_DBG_FLAG = -S
 DBG = gdb-multiarch
 DBG_FLAGS = -x start.gdb

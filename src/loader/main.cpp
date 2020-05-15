@@ -24,6 +24,7 @@ EfiFileProtocol *openRootFile(EfiHandle ImageHandle){
 
     status = SFSP->OpenVolume(SFSP, &root);
     assert_status(status, L"getroot");
+
     return root;
 }
 
@@ -50,9 +51,14 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     Elf64_Phdr *elfPhdr;
     EfiStatus status;
 
+
     // open root from where we boot
     root = openRootFile(ImageHandle);
 
+    Rect rect = {10, 10 ,100, 100};
+    draw_rect(rect, white);
+
+    // open and read kernel.elf
     status = root->Open(root, &kernelFile, L"\\kernel.elf", EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
     assert_status(status, L"OpenkernelFile");
 
@@ -71,6 +77,8 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
 
     status = kernelFile->Read(kernelFile, &kernelElfBufsize, (void*)kernelElfBuf);
     assert_status(status, L"ReadKernelElf");
+
+    // parse elf header
     elfHeader = reinterpret_cast<Elf64_Ehdr*>(kernelElfBuf);
     puts(L"Elf Header: ");
     puts(L" e_phoff: ");
@@ -111,6 +119,12 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
         puts(L" bytes \r\n");
         memzero(reinterpret_cast<char*>(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz), elfPhdr[i].p_memsz - elfPhdr[i].p_filesz);
     }
+    // get framebuffer info
+    FrameBuffer fb;
+    fb.base = GOP->Mode->FrameBufferBase;
+    fb.size = GOP->Mode->FrameBufferSize;
+    fb.hr = GOP->Mode->Info->HorizontalResolution;
+    fb.vr = GOP->Mode->Info->VerticalResolution;
 
     // get memory map
     UINTN memorymap_size = 4096;
@@ -126,7 +140,8 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     status = ST->BootServices->ExitBootServices(ImageHandle, mapkey);
     assert_status(status, L"ExitBOotServices");
 
-    BootInfo bi = {6};
+    BootInfo bi;
+    bi.fb = fb;
     jumpToKernel((void*)elfHeader->e_entry, &bi);
 
     // panic

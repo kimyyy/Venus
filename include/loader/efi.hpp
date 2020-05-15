@@ -251,9 +251,10 @@ struct EfiGraphicsOutputPtorocolMode {
 };
 
 struct EfiGraphicsOutputPtorocol {
-    EfiStatus QueryMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber, UINTN *SizeOfInfo, EfiGraphicsOutputModeInfo **Info);
-    EfiStatus SetMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber);
-    EfiStatus Blt(EfiGraphicsOutputPtorocol *This, EfiGraphicsOutputBitPixel *BltBuffer, EfiGraphicsOutputBltOperation BltOperation, UINTN SrcX, UINTN SrcY, UINTN DstX, UINTN DstY, UINTN Width, UINTN Height, UINTN Delta);
+    //EfiStatus *QueryMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber, UINTN *SizeOfInfo, EfiGraphicsOutputModeInfo **Info);
+    //EfiStatus *SetMode(EfiGraphicsOutputPtorocol *This, uint32_t ModeNumber);
+    //EfiStatus *Blt(EfiGraphicsOutputPtorocol *This, EfiGraphicsOutputBitPixel *BltBuffer, EfiGraphicsOutputBltOperation BltOperation, UINTN SrcX, UINTN SrcY, UINTN DstX, UINTN DstY, UINTN Width, UINTN Height, UINTN Delta);
+    uint64_t _buf[3];
     EfiGraphicsOutputPtorocolMode *Mode;
 };
 
@@ -373,6 +374,7 @@ extern EfiDevicePathUtilitiesProtocol *DPUP;
 extern EfiGuid lip_guid;
 extern EfiGuid dpp_guid;
 extern EfiGuid sfsp_guid;
+extern EfiGuid gop_guid;
 
 void efi_init(EfiSystemTable *SystemTable);
 
