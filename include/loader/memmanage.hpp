@@ -1,5 +1,5 @@
 #pragma once
-#include "common.hpp"
+#include "common_loader.hpp"
 #include "efi.hpp"
 
 #define EfiPageSize (1<<12)

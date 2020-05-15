@@ -1,5 +1,5 @@
 #include "efi.hpp"
-#include "common.hpp"
+#include "common_loader.hpp"
 
 EfiSystemTable *ST;
 EfiGraphicsOutputPtorocol *GOP;

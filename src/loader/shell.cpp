@@ -1,5 +1,5 @@
 #include "efi.hpp"
-#include "common.hpp"
+#include "common_loader.hpp"
 #include "file.hpp"
 #include "shell.hpp"
 #include "graphics.hpp"

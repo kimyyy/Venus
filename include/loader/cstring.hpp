@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "common_loader.hpp"
 #define MAX_STR_BUF 100
 
 unsigned int strlen(const wchar_t *s);

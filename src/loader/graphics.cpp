@@ -1,5 +1,5 @@
 #include "efi.hpp"
-#include "common.hpp"
+#include "common_loader.hpp"
 #include "graphics.hpp"
 
 const EfiGraphicsOutputBitPixel white = {0xff, 0xff, 0xff, 0xff};

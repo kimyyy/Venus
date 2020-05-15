@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
+#include "common.hpp"
 
 typedef unsigned long long ull;
 

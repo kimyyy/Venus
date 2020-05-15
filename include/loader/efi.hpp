@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "common_loader.hpp"
 
 typedef uint64_t UINTN;
 typedef int64_t INTN;
