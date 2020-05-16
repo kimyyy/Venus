@@ -120,7 +120,7 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
         memzero(reinterpret_cast<char*>(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz), elfPhdr[i].p_memsz - elfPhdr[i].p_filesz);
     }
     // get framebuffer info
-    FrameBuffer fb;
+    FrameBufferInfo fb;
     fb.base = GOP->Mode->FrameBufferBase;
     fb.size = GOP->Mode->FrameBufferSize;
     fb.hr = GOP->Mode->Info->HorizontalResolution;
