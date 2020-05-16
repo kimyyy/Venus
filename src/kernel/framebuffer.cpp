@@ -40,7 +40,20 @@ void FrameBuffer::drawLine(Point start, Point end, Color color){
 }
 
 void FrameBuffer::drawRect(Rect rect, Color color){
+    for(uint32_t h = rect.begin.y; h < rect.begin.y + rect.height;h++){
+        drawLine(Point(rect.begin.x, h), Point(rect.begin.x + rect.width, h), color);
+    }
+}
 
+void FrameBuffer::drawRect(Point start, Point end, Color color){
+    if(!(start.x <= end.x && start.y <= end.y)){
+        Point tmp = start;
+        start = end;
+        end = tmp;
+    }
+    uint32_t width = end.x - start.x;
+    uint32_t height = end.y - start.y;
+    drawRect(Rect(start, width, height), color);
 }
 
 void FrameBuffer::testFrameBuffer(){
@@ -48,4 +61,7 @@ void FrameBuffer::testFrameBuffer(){
     Color green = pallet.green;
     drawPoint(Point(100, 100), green);
     drawLine(Point(100, 1), Point(100, 100), green);
+    Rect rect = {Point(100, 100), 50, 50};
+    drawRect(rect, pallet.blue);
+    drawRect(Point(200, 200), Point(300, 400), pallet.red);
 }
