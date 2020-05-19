@@ -13,7 +13,7 @@ INCLUDE_LOADER = -I./include/loader $(INCLUDE_COMMON)
 INCLUDE_KERNEL = -I./include/kernel $(INCLUDE_COMMON)
 FLAGS_NOEXCEPTION = -fno-exceptions -fno-unwind-tables
 CFLAGS_WARN = -Wall -Wextra
-CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(NEWLIB_INCLUDE) $(CXXINCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION)
+CFLAGS_GCC = -m64 $(CFLAGS_WARN) $(NEWLIB_INCLUDE) $(CXXINCLUDE) -g3 -fno-pic  -ffreestanding -nostdinc -nostdlib -fno-stack-protector -fshort-wchar -mno-red-zone -fno-builtin -MMD -MP $(FLAGS_NOEXCEPTION) -mcmodel=large
 CFLAGS_LLVM = --target=x86_64-elf -gdwarf $(FLAGS_NOEXCEPTION) -fno-stack-protector -mno-red-zone -nostdlibinc -Wall -Wpedantic
 
 ifdef LLVM
@@ -40,7 +40,7 @@ LD_KERNEL_LLVM = ld.lld-10
 
 LDFLAGS_LOADER_GCC = --subsystem 10 -e efi_main
 LDFLAGS_LOADER_LLVM = --entry efi_main
-LDFLAGS_KERNEL_GCC = -static -T $(SRCDIR_KERNEL)/kernel.ld
+LDFLAGS_KERNEL_GCC = -static -T $(SRCDIR_KERNEL)/kernel.ld $(NEWLIB_LINK)
 LDFLAGS_KERNEL_LLVM = $(LDFLAGS_KERNEL_GCC)
 
 ifdef LLVM
@@ -87,8 +87,9 @@ KERNEL = $(FSPATH)/kernel.elf
 TARGET = $(LOADER) $(KERNEL)
 
 # include thirdparty
-NEWLIBPATH = ./newlib
+NEWLIBPATH = ./newlib/x86_64-none-elf
 NEWLIB_INCLUDE = -I$(NEWLIBPATH)/include
+NEWLIB_LINK = -L$(NEWLIBPATH)/lib -lm -lc
 CXXLIBPATH = $(HOME)/projects/os-project/tools/local/lib/gcc/x86_64-none-elf/9.3.0/include
 CXXINCLUDE = -I$(CXXLIBPATH)
 
@@ -112,7 +113,7 @@ mkd:
 # loader
 
 $(LOADER): $(OBJECTS_LOADER) $(LIBS)
-	$(LD_LOADER) $(LDFLAGS_LOADER) -o $@ $^
+	$(LD_LOADER) -o $@ $^ $(LDFLAGS_LOADER) 
 
 $(OBJDIR_LOADER)/%.o: $(SRCDIR_LOADER)/%.cpp
 	$(CXX_LOADER) $(CFLAGS_LOADER) -c $<  -o $@
@@ -127,16 +128,16 @@ $(OBJDIR_LOADER)/%.s: $(SRCDIR_LOADER)/%.cpp
 # kernel
 
 $(KERNEL): $(OBJECTS_KERNEL)
-	$(LD_KERNEL) $(LDFLAGS_KERNEL) -o $@ $^
+	$(LD_KERNEL) -o $@ $^ $(LDFLAGS_KERNEL)
 
 $(OBJDIR_KERNEL)/%.o : $(SRCDIR_KERNEL)/%.cpp
-	$(CXX_KERNEL) $(CFLAGS_KERNEL) -c $< -o $@
+	$(CXX_KERNEL) -c $< -o $@ $(CFLAGS_KERNEL) 
 
 $(OBJDIR_COMMON)/%.kernel.o: $(SRCDIR_COMMON)/%.cpp
-	$(CXX_KERNEL) $(CFLAGS_KERNEL) -c $< -o $@
+	$(CXX_KERNEL)  -c $< -o $@ $(CFLAGS_KERNEL)
 
 $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
-	$(CXX_KERNEL) $(CFLAGS_KERNEL) -S -o $@ $<
+	$(CXX_KERNEL) -S -o $@ $< $(CFLAGS_KERNEL) 
 
 
 

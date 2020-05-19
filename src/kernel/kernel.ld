@@ -10,7 +10,7 @@ SECTIONS
     *(.data)
 }
 
-.rodata ALIGN(0x1000): { *(.rodata) }
+.rodata : { *(.rodata) }
 .bss :{ *(.bss) }
 
 .got : {
