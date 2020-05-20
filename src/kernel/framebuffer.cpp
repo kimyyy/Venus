@@ -40,20 +40,24 @@ void FrameBuffer::drawLine(Point start, Point end, Color color){
 }
 
 void FrameBuffer::drawRect(Rect rect, Color color){
+    Point points[4] = {rect.begin, rect.begin+Point(rect.width , 0), rect.begin+Point(rect.width, rect.height), rect.begin+Point(0, rect.height)};
+    for(int i = 0;i < 4;i++){
+        drawLine(points[i], points[(i+1)%4],color);
+    }
+}
+
+void FrameBuffer::drawRect(Point start, Point end, Color color){
+    drawRect(Rect(start, end), color);
+}
+
+void FrameBuffer::fillRect(Rect rect, Color color){
     for(uint32_t h = rect.begin.y; h < rect.begin.y + rect.height;h++){
         drawLine(Point(rect.begin.x, h), Point(rect.begin.x + rect.width, h), color);
     }
 }
 
-void FrameBuffer::drawRect(Point start, Point end, Color color){
-    if(!(start.x <= end.x && start.y <= end.y)){
-        Point tmp = start;
-        start = end;
-        end = tmp;
-    }
-    uint32_t width = end.x - start.x;
-    uint32_t height = end.y - start.y;
-    drawRect(Rect(start, width, height), color);
+void FrameBuffer::fillRect(Point start, Point end, Color color){
+    fillRect(Rect(start, end), color);
 }
 
 void FrameBuffer::testFrameBuffer(){
@@ -61,7 +65,9 @@ void FrameBuffer::testFrameBuffer(){
     Color green = pallet.green;
     drawPoint(Point(100, 100), green);
     drawLine(Point(100, 1), Point(100, 100), green);
-    Rect rect = {Point(100, 100), 50, 50};
-    drawRect(rect, pallet.blue);
-    drawRect(Point(200, 200), Point(300, 400), pallet.red);
+    Rect rect(Point(100, 100), 50, 50);
+    Rect r1(Point(100, 200), Point(200,100));
+    drawRect(r1, green);
+    fillRect(rect, pallet.blue);
+    fillRect(r1, pallet.red);
 }
