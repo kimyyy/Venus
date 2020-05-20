@@ -14,6 +14,21 @@ T& min(T& a, T& b){
    return (a < b)? a : b; 
 }
 
+extern char _binary_resources_CyrKoi_Terminus32x16_psf_start;
+extern char _binary_resources_CyrKoi_Terminus32x16_psf_end;
+extern char _binary_resources_CyrKoi_Terminus32x16_psf_size;
+
+struct PSF_Header {
+    uint32_t magic;
+    uint32_t version;
+    uint32_t headersize;
+    uint32_t flags;
+    uint32_t numglyph;
+    uint32_t bytesperglyph;
+    uint32_t height;
+    uint32_t width;
+};
+
 class Point {
     public:
     uint32_t x;
@@ -84,4 +99,5 @@ class FrameBuffer{
     void drawRect(Point start, Point end, Color color);
     void fillRect(Rect rect, Color color);
     void fillRect(Point start, Point end, Color color);
+    void putc(const char* c,Point point, Color fgcolor, Color bgcolor);
 };

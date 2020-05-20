@@ -10,9 +10,9 @@ SECTIONS
     *(.data)
 }
 
-.rodata : { *(.rodata) }
+.rodata : { *(.rodata)
+}
 .bss :{ *(.bss) }
-
 .got : {
     *(.got)
 }

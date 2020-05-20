@@ -1,6 +1,7 @@
 
 #include "framebuffer.hpp"
 
+
 FrameBuffer::FrameBuffer(FrameBufferInfo info){
     m_base = reinterpret_cast<PixelFormat *>(info.base);
     m_size = info.size;
@@ -58,6 +59,22 @@ void FrameBuffer::fillRect(Rect rect, Color color){
 
 void FrameBuffer::fillRect(Point start, Point end, Color color){
     fillRect(Rect(start, end), color);
+}
+
+void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor){
+    PSF_Header *psf_header = reinterpret_cast<PSF_Header*>(&_binary_resources_CyrKoi_Terminus32x16_psf_start);
+    uint16_t *bitmapbase = reinterpret_cast<uint16_t*>((uint64_t)psf_header + psf_header->headersize + (uint8_t)(*c)*(psf_header->bytesperglyph));
+    for(uint32_t i = 0; i < psf_header->height;i++){
+        // get i-th line of bitmap
+        uint16_t line = *(bitmapbase + i);
+        for(uint32_t j = 0;j < psf_header->width;j++){
+            // get j-th bit of bitmap
+            uint16_t maskbit = ((psf_header->width-j-1) + psf_header->width/2) % psf_header->width; 
+            uint16_t mask = line & (1<<maskbit);
+            Color color = mask==0? bgcolor:fgcolor;
+            drawPoint(point+Point(j, i), color);
+        }
+    }
 }
 
 void FrameBuffer::testFrameBuffer(){

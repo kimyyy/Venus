@@ -107,6 +107,8 @@ DBG = gdb-multiarch
 DBG_FLAGS = -x start.gdb
 DBG_FLAGS_KERNEL = -x kernel.gdb
 
+OBJCPY = ../tools/local/bin/x86_64-none-elf-objcopy
+OBJCPY_FLAGS =  -O $(KERNEL_TARGETARCH) -I binary
 
 # start recipe
 all: clean mkd $(TARGET)
@@ -145,7 +147,7 @@ $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
 	$(CXX_KERNEL) -S -o $@ $< $(CFLAGS_KERNEL) 
 
 $(OBJECT_FONT): $(FONT)
-	objcopy -O $(KERNEL_TARGETARCH) -B i386 -I binary $< $@
+	$(OBJCPY) $(OBJCPY_FLAGS) $< $@
 
 # use tools
 run: $(TARGET)
@@ -163,6 +165,8 @@ gdb: $(TARGET) $(SRC)
 gdb_k: $(TARGET)
 	$(DBG) $(DBG_FLAGS_KERNEL) $(KERNEL)
 
+help:
+	echo $(FONT)
 
 
 clean:

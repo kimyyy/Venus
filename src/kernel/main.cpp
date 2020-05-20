@@ -3,6 +3,7 @@
 #include "framebuffer.hpp"
 #include <stdlib.h>
 
+
 void testnewlib() {
     int hoge = atoi("4");
 }
@@ -10,8 +11,8 @@ void testnewlib() {
 extern "C"
 void KernelMain(BootInfo* bootInfo){
     FrameBuffer fb = FrameBuffer(bootInfo->fb);
-    fb.testFrameBuffer();
-    testnewlib();
+    Pallet pallet;
+    fb.putc("a", Point(100, 100), pallet.red, pallet.blue);
     char str[20] = "Hello, kernel!";
     for(int i = 0;i < 20 && str[i] != '\0';i++){
         WriteIOPort8(0x3f8, str[i]);
