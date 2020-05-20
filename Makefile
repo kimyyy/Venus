@@ -1,12 +1,14 @@
 .PHONY: all clean run gdb mkd gdb_k
 
+KERNEL_TARGETARCH = x86_64-none-elf
+
 # compiler choice
 CC_LLVM = clang
 CXX_LLVM = clang++-10
 CC_LOADER_GCC = x86_64-w64-mingw32-gcc
 CXX_LOADER_GCC = x86_64-w64-mingw32-g++ 
-CC_KERNEL_GCC = x86_64-none-elf-gcc
-CXX_KERNEL_GCC = x86_64-none-elf-g++
+CC_KERNEL_GCC = $(KERNEL_TARGETARCH)-gcc
+CXX_KERNEL_GCC = $(KERNEL_TARGETARCH)-g++
 
 INCLUDE_COMMON = -I./include/common
 INCLUDE_LOADER = -I./include/loader $(INCLUDE_COMMON)
@@ -35,7 +37,7 @@ endif
 # linker choice
 LD_LOADER_GCC = x86_64-w64-mingw32-ld
 LD_LOADER_LLVM = ld.lld-10
-LD_KERNEL_GCC = x86_64-none-elf-ld
+LD_KERNEL_GCC = $(KERNEL_TARGETARCH)-ld
 LD_KERNEL_LLVM = ld.lld-10
 
 LDFLAGS_LOADER_GCC = --subsystem 10 -e efi_main
@@ -75,11 +77,14 @@ SRC_KERNEL = $(wildcard $(SRCDIR_KERNEL)/*.cpp)
 SRC_COMMON = $(wildcard $(SRCDIR_COMMON)/*.cpp)
 OBJECTS = $(OBJECTS_KERNEL) $(OBJECTS_LOADER)
 OBJECTS_LOADER = $(addprefix $(OBJDIR_LOADER)/, $(notdir $(SRC_LOADER:.cpp=.o))) $(addprefix $(OBJDIR_COMMON)/, $(notdir $(SRC_COMMON:.cpp=.loader.o)))
-OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o))) $(addprefix $(OBJDIR_COMMON)/, $(notdir $(SRC_COMMON:.cpp=.kernel.o)))
+OBJECTS_KERNEL = $(addprefix $(OBJDIR_KERNEL)/, $(notdir $(SRC_KERNEL:.cpp=.o))) $(addprefix $(OBJDIR_COMMON)/, $(notdir $(SRC_COMMON:.cpp=.kernel.o))) $(OBJECT_FONT)
 DEPENDS = $(DEPENDS_KERNEL) $(DEPENDS_LOADER)
 DEPENDS_LOADER = $(OBJECTS_LOADER:.o=.d)
 DEPENDS_KERNEL = $(OBJECTS_KERNEL:.o=.d)
 ASMS = $(OBJECTS:.o=.s)
+FONTDIR = ./resources
+FONT = $(wildcard $(FONTDIR)/*.psf)
+OBJECT_FONT = $(FONT:.psf=.o)
 
 LOADER = $(EFIPATH)/BOOTX64.EFI
 KERNEL = $(FSPATH)/kernel.elf
@@ -139,7 +144,8 @@ $(OBJDIR_COMMON)/%.kernel.o: $(SRCDIR_COMMON)/%.cpp
 $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
 	$(CXX_KERNEL) -S -o $@ $< $(CFLAGS_KERNEL) 
 
-
+$(OBJECT_FONT): $(FONT)
+	objcopy -O $(KERNEL_TARGETARCH) -B i386 -I binary $< $@
 
 # use tools
 run: $(TARGET)
