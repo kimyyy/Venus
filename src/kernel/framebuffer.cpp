@@ -1,5 +1,6 @@
 
 #include "framebuffer.hpp"
+#include "psf.hpp"
 
 
 FrameBuffer::FrameBuffer(FrameBufferInfo info){
@@ -72,13 +73,12 @@ void FrameBuffer::drawbitmap(uint8_t block, Point point, Color fgcolor, Color bg
 
 // assume bitmap width is multiplier of 8
 void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor){
-    PSF_Header *psf_header = reinterpret_cast<PSF_Header*>(&_binary_resources_CyrKoi_Terminus32x16_psf_start);
+    PSF2_Header *psf_header = reinterpret_cast<PSF2_Header*>(&_binary_resources_CyrKoi_Terminus32x16_psf_start);
     uint16_t *bitmapbase = reinterpret_cast<uint16_t*>((uint64_t)psf_header + psf_header->headersize + (uint8_t)(*c)*(psf_header->bytesperglyph));
     for(uint32_t i = 0; i < psf_header->height;i++){
         // get i-th line of bitmap
         uint8_t * linestart = reinterpret_cast<uint8_t*>(bitmapbase + i);
         for(uint32_t j = 0;j < psf_header->width/8;j++){
-            //drawPoint(point+Point(j*8, i), color);
             uint8_t block = *(linestart + j);
             uint8_t block_bitlen = 8;
             for (uint8_t l = 0; l < block_bitlen; l++) {

@@ -2,6 +2,7 @@
 
 #include "common.hpp"
 #include "bootInfo.hpp"
+#include "psf.hpp"
 #include <stdlib.h>
 
 template<typename T>
@@ -14,20 +15,6 @@ T& min(T& a, T& b){
    return (a < b)? a : b; 
 }
 
-extern char _binary_resources_CyrKoi_Terminus32x16_psf_start;
-extern char _binary_resources_CyrKoi_Terminus32x16_psf_end;
-extern char _binary_resources_CyrKoi_Terminus32x16_psf_size;
-
-struct PSF_Header {
-    uint32_t magic;
-    uint32_t version;
-    uint32_t headersize;
-    uint32_t flags;
-    uint32_t numglyph;
-    uint32_t bytesperglyph;
-    uint32_t height;
-    uint32_t width;
-};
 
 class Point {
     public:
