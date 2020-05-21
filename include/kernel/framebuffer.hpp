@@ -54,6 +54,9 @@ struct Pallet {
     const Color green = Color(0, 255, 0);
     const Color blue = Color(255, 0, 0);
     const Color red = Color(0, 0, 255);
+    const Color white = Color(255, 255, 255);
+    const Color black = Color(0, 0, 0);
+    const Color yellow = Color(0, 255, 255);
 };
 
 class Rect {
@@ -90,6 +93,7 @@ class FrameBuffer{
     uint32_t m_hr;
     uint32_t m_vr;
     PixelFormat *getPixelFormat(Point point);
+    void drawbitmap(uint8_t block, Point point, Color fgcolor, Color bgcolor);
     public:
     FrameBuffer(FrameBufferInfo info);
     void testFrameBuffer();

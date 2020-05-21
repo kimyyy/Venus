@@ -61,18 +61,31 @@ void FrameBuffer::fillRect(Point start, Point end, Color color){
     fillRect(Rect(start, end), color);
 }
 
+void FrameBuffer::drawbitmap(uint8_t block, Point point, Color fgcolor, Color bgcolor){
+    uint8_t block_bitlen = 8;
+    for (uint8_t l = 0; l < block_bitlen; l++) {
+      uint8_t mask = block & (1 << (block_bitlen - l - 1));
+      Color col = mask == 0 ? bgcolor : fgcolor;
+      drawPoint(point + Point(l, 0), col);
+    }
+}
+
+// assume bitmap width is multiplier of 8
 void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor){
     PSF_Header *psf_header = reinterpret_cast<PSF_Header*>(&_binary_resources_CyrKoi_Terminus32x16_psf_start);
     uint16_t *bitmapbase = reinterpret_cast<uint16_t*>((uint64_t)psf_header + psf_header->headersize + (uint8_t)(*c)*(psf_header->bytesperglyph));
     for(uint32_t i = 0; i < psf_header->height;i++){
         // get i-th line of bitmap
-        uint16_t line = *(bitmapbase + i);
-        for(uint32_t j = 0;j < psf_header->width;j++){
-            // get j-th bit of bitmap
-            uint16_t maskbit = ((psf_header->width-j-1) + psf_header->width/2) % psf_header->width; 
-            uint16_t mask = line & (1<<maskbit);
-            Color color = mask==0? bgcolor:fgcolor;
-            drawPoint(point+Point(j, i), color);
+        uint8_t * linestart = reinterpret_cast<uint8_t*>(bitmapbase + i);
+        for(uint32_t j = 0;j < psf_header->width/8;j++){
+            //drawPoint(point+Point(j*8, i), color);
+            uint8_t block = *(linestart + j);
+            uint8_t block_bitlen = 8;
+            for (uint8_t l = 0; l < block_bitlen; l++) {
+              uint8_t mask = block & (1 << (block_bitlen - l - 1));
+              Color col = mask == 0 ? bgcolor : fgcolor;
+              drawPoint(point + Point(j*block_bitlen + l, i), col);
+            }
         }
     }
 }
