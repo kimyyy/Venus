@@ -14,6 +14,6 @@ PsfFont::PsfFont(uint8_t version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& s
 }
 
 void *PsfFont::getGlyphaddr(uint32_t offset){
-    void *ret = reinterpret_cast<void *>((uint64_t)bitmap_startaddr, offset * bytes_perglyph);
+    void *ret = reinterpret_cast<void *>((uint64_t)bitmap_startaddr +  offset * bytes_perglyph);
     return ret;
 }

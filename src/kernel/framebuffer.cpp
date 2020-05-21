@@ -72,7 +72,7 @@ void FrameBuffer::drawbitmap(uint8_t block, Point point, Color fgcolor, Color bg
 
 // assume bitmap width is multiplier of 8
 void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor, PsfFont font){
-    uint16_t *bitmapbase = reinterpret_cast<uint16_t*>((uint64_t)font.bitmap_startaddr + (uint8_t)(*c)*(font.bytes_perglyph));
+    uint16_t *bitmapbase = reinterpret_cast<uint16_t*>(font.getGlyphaddr((uint32_t)(*c)));
     for(uint32_t i = 0; i < font.height;i++){
         // get i-th line of bitmap
         uint8_t * linestart = reinterpret_cast<uint8_t*>(bitmapbase + i);
