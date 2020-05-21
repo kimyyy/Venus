@@ -90,5 +90,5 @@ class FrameBuffer{
     void drawRect(Point start, Point end, Color color);
     void fillRect(Rect rect, Color color);
     void fillRect(Point start, Point end, Color color);
-    void putc(const char* c,Point point, Color fgcolor, Color bgcolor);
+    void putc(const char* c,Point point, Color fgcolor, Color bgcolor,PsfFont font);
 };
