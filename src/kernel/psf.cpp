@@ -2,7 +2,7 @@
 #include "psf.hpp"
 
 PsfFont::PsfFont(uint8_t version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size){
-        assert_test((uint64_t)&end - (uint64_t)&start, (uint64_t)&size);
+        assert((uint64_t)&end - (uint64_t)&start, (uint64_t)&size);
         Psf2Header *psf_header = reinterpret_cast<Psf2Header*>(&start);
         height = psf_header->height;
         width = psf_header->width;
@@ -20,9 +20,9 @@ void *PsfFont::getGlyphaddr(uint32_t offset){
 
 void PsfFont::test(){
     PsfFont psffont_cyrkoi(2, _binary_resources_CyrKoi_Terminus32x16_psf_start, _binary_resources_CyrKoi_Terminus32x16_psf_end, _binary_resources_CyrKoi_Terminus32x16_psf_size);
-    assert_test(psffont_cyrkoi.height, (uint32_t)32);
-    assert_test(psffont_cyrkoi.width, (uint32_t)16);
-    assert_test(psffont_cyrkoi.hasUnicodeTable, true);
-    assert_test(psffont_cyrkoi.bytes_perglyph, (uint32_t)64);
-    assert_test(psffont_cyrkoi.num_glyph, (uint32_t)256);
+    assert(psffont_cyrkoi.height, (uint32_t)32);
+    assert(psffont_cyrkoi.width, (uint32_t)16);
+    assert(psffont_cyrkoi.hasUnicodeTable, true);
+    assert(psffont_cyrkoi.bytes_perglyph, (uint32_t)64);
+    assert(psffont_cyrkoi.num_glyph, (uint32_t)256);
 }

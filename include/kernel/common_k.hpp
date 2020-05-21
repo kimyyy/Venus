@@ -5,7 +5,7 @@
 void panic();
 
 template<typename T>
-void assert_test(T actual, T expected){
+void assert(T actual, T expected){
     if(actual != expected){
         // TODO: print message
         // "actual is hoge, expected is bar"
