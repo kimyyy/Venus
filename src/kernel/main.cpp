@@ -10,6 +10,7 @@ void testnewlib() {
 
 extern "C"
 void KernelMain(BootInfo* bootInfo){
+    PsfFont::test();
     FrameBuffer fb = FrameBuffer(bootInfo->fb);
     Pallet pallet;
     PsfFont psffont_cyrkoi(2, _binary_resources_CyrKoi_Terminus32x16_psf_start, _binary_resources_CyrKoi_Terminus32x16_psf_end, _binary_resources_CyrKoi_Terminus32x16_psf_size);
