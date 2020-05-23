@@ -61,26 +61,65 @@ void FrameBuffer::fillRect(Point start, Point end, Color color){
     fillRect(Rect(start, end), color);
 }
 
-void FrameBuffer::drawbitmap(uint8_t block, Point point, Color fgcolor, Color bgcolor){
-    uint8_t block_bitlen = 8;
-    for (uint8_t l = 0; l < block_bitlen; l++) {
-      uint8_t mask = block & (1 << (block_bitlen - l - 1));
-      Color col = mask == 0 ? bgcolor : fgcolor;
-      drawPoint(point + Point(l, 0), col);
-    }
-}
-
-void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor, PsfFont font){
+// implementation of putc
+void FrameBuffer::putc(const char* c, Point point, PsfFont font, Color fgcolor, Color bgcolor,  bool transparent){
     for(uint32_t i = 0; i < font.height;i++){
         uint8_t line[32];
         font.getLine(*c, i, line);
         for(uint32_t j = 0;j < font.width;j++){
-            drawPoint(point + Point(j, i), line[j]==1? fgcolor:bgcolor);
+            Point point_sweep = point + Point(j, i);
+            if(line[j] == 1){
+                drawPoint(point_sweep, fgcolor);
+            }else if(!transparent){
+                drawPoint(point_sweep, bgcolor);
+            }
         }
     }
 }
 
-void FrameBuffer::testFrameBuffer(){
+void FrameBuffer::putc(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor){
+    putc(c, point, font, fgcolor ,bgcolor, false);
+}
+
+void FrameBuffer::putc(const char* c,Point point, PsfFont font, Color fgcolor){
+    Color bgcolor_dummy(0, 0, 0);
+    putc(c, point, font, fgcolor, bgcolor_dummy, true);
+}
+
+// implementation of puts
+void FrameBuffer::puts(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor, bool transparent){
+    Point point_start = point;
+    while(*c != '\0'){
+        // FIXME: what to do if '\r' ?
+        if(*c == '\n'){
+            point = point_start + Point(0, font.height);
+            point_start = point;
+            c++;
+            continue;
+        }
+        putc(c, point, font, fgcolor, bgcolor, transparent);
+        c++;
+        point = point + Point(font.width, 0);
+    }
+}
+
+void FrameBuffer::puts(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor){
+    puts(c, point, font, fgcolor ,bgcolor, false);
+}
+
+void FrameBuffer::puts(const char* c,Point point, PsfFont font, Color fgcolor){
+    Color bgcolor_dummy(0, 0, 0);
+    puts(c, point, font, fgcolor, bgcolor_dummy, true);
+}
+
+
+
+
+
+
+
+
+void FrameBuffer::test(){
     Pallet pallet;
     Color green = pallet.green;
     drawPoint(Point(100, 100), green);
@@ -90,4 +129,9 @@ void FrameBuffer::testFrameBuffer(){
     drawRect(r1, green);
     fillRect(rect, pallet.blue);
     fillRect(r1, pallet.red);
+
+    PsfFont psffont_cyrkoi(PsfVersion::Version2, _binary_resources_CyrKoi_Terminus32x16_psf_start, _binary_resources_CyrKoi_Terminus32x16_psf_end, _binary_resources_CyrKoi_Terminus32x16_psf_size);
+    putc("a", Point(200, 100), psffont_cyrkoi, pallet.white);
+    puts("Hello, framebuffer!", Point(200, 200), psffont_cyrkoi, pallet.white);
+    puts("Hello, \nframebuffer!", Point(200, 300), psffont_cyrkoi, pallet.white);
 }

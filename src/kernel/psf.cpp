@@ -57,7 +57,7 @@ void PsfFont::getLine(uint32_t c, uint32_t lineheight, uint8_t line[]){
 }
 
 void PsfFont::test(){
-  // parse psf version: 1
+  // parse psf header version: 1
   PsfFont psffont_cyrkoi16(PsfVersion::Version1,
           _binary_resources_CyrKoi_Terminus16_psf_start,
           _binary_resources_CyrKoi_Terminus16_psf_end,
@@ -68,7 +68,7 @@ void PsfFont::test(){
   assert(psffont_cyrkoi16.hasUnicodeTable = true);
   assert(psffont_cyrkoi16.num_glyph = 256);
 
-  // parse psf version 2
+  // parse psf header version 2
   PsfFont psffont_cyrkoi32x16(PsfVersion::Version2,
                               _binary_resources_CyrKoi_Terminus32x16_psf_start,
                               _binary_resources_CyrKoi_Terminus32x16_psf_end,
@@ -79,7 +79,7 @@ void PsfFont::test(){
   assert(psffont_cyrkoi32x16.bytes_perglyph, (uint32_t)64);
   assert(psffont_cyrkoi32x16.num_glyph, (uint32_t)256);
 
-  // getLine
+  // getLine test
   uint8_t line_0_expect[] = {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0};
   uint8_t line_0_actual[16];
   psffont_cyrkoi32x16.getLine('0', 6, line_0_actual);

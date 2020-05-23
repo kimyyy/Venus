@@ -52,11 +52,11 @@ class PsfFont {
         uint64_t datasize;
         void *glyphs_startaddr;
         uint32_t getGlyphIndex(uint32_t c);
+        uint8_t* getGlyphaddr(uint32_t index);
     public:
-        PsfFont(PsfVersion version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size);
         uint32_t height;
         uint32_t width;
-        uint8_t* getGlyphaddr(uint32_t index);
+        PsfFont(PsfVersion version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size);
         void getLine(uint32_t c, uint32_t height, uint8_t line[]);
         static void test();
 };

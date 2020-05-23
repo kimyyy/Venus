@@ -80,15 +80,24 @@ class FrameBuffer{
     uint32_t m_hr;
     uint32_t m_vr;
     PixelFormat *getPixelFormat(Point point);
-    void drawbitmap(uint8_t block, Point point, Color fgcolor, Color bgcolor);
+    void putc(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor, bool transparent);
+    void puts(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor, bool transparent);
     public:
+    // constructor
     FrameBuffer(FrameBufferInfo info);
-    void testFrameBuffer();
+
+    // draw figure
     void drawLine(Point start, Point end, Color color);
     void drawPoint(Point point, Color color);
     void drawRect(Rect rect, Color color);
     void drawRect(Point start, Point end, Color color);
     void fillRect(Rect rect, Color color);
     void fillRect(Point start, Point end, Color color);
-    void putc(const char* c,Point point, Color fgcolor, Color bgcolor,PsfFont font);
+
+    // put char/string
+    void putc(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor);
+    void putc(const char* c,Point point, PsfFont font, Color fgcolor);
+    void puts(const char* c,Point point, PsfFont font, Color fgcolor, Color bgcolor);
+    void puts(const char* c,Point point, PsfFont font, Color fgcolor);
+    void test();
 };
