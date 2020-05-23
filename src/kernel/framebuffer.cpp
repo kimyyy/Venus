@@ -70,20 +70,12 @@ void FrameBuffer::drawbitmap(uint8_t block, Point point, Color fgcolor, Color bg
     }
 }
 
-// assume bitmap width is multiplier of 8
 void FrameBuffer::putc(const char* c, Point point, Color fgcolor, Color bgcolor, PsfFont font){
-    uint16_t *bitmapbase = reinterpret_cast<uint16_t*>(font.getGlyphaddr((uint32_t)(*c)));
     for(uint32_t i = 0; i < font.height;i++){
-        // get i-th line of bitmap
-        uint8_t * linestart = reinterpret_cast<uint8_t*>(bitmapbase + i);
-        for(uint32_t j = 0;j < font.width/8;j++){
-            uint8_t block = *(linestart + j);
-            uint8_t block_bitlen = 8;
-            for (uint8_t l = 0; l < block_bitlen; l++) {
-              uint8_t mask = block & (1 << (block_bitlen - l - 1));
-              Color col = mask == 0 ? bgcolor : fgcolor;
-              drawPoint(point + Point(j*block_bitlen + l, i), col);
-            }
+        uint8_t line[32];
+        font.getLine(*c, i, line);
+        for(uint32_t j = 0;j < font.width;j++){
+            drawPoint(point + Point(j, i), line[j]==1? fgcolor:bgcolor);
         }
     }
 }

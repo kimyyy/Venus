@@ -2,13 +2,30 @@
 
 #include "common.hpp"
 #include "common_k.hpp"
+#include "util.hpp"
 
 typedef char PsfSymbol;
 
-// this value is available in only runtime
+// information for each psf file
+// these values are available in only runtime
 extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_start;
 extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_end;
 extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_size;
+
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_start;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_end;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_size;
+
+// psf header 
+enum class PsfVersion {
+    Version1,
+    Version2
+};
+
+const uint8_t psf1_magic[2] = {0x36, 0x04};
+const uint8_t psf1_mode512 = 0x01;
+const uint8_t psf1_modehastab = 0x02;
+const uint8_t psf1_modehasseq = 0x04;
 
 struct Psf1Header {
     uint8_t magic[2];
@@ -29,16 +46,18 @@ struct Psf2Header {
 
 class PsfFont {
     private:
-    bool hasUnicodeTable;
-    uint32_t num_glyph;
-    uint32_t bytes_perglyph;
-    uint64_t datasize;
-    void *glyphs_startaddr;
+        bool hasUnicodeTable;
+        uint32_t num_glyph;
+        uint32_t bytes_perglyph;
+        uint64_t datasize;
+        void *glyphs_startaddr;
+        uint32_t getGlyphIndex(uint32_t c);
     public:
-    uint32_t height;
-    uint32_t width;
-    PsfFont(uint8_t version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size);
-    void* getGlyphaddr(uint32_t offset);
-    static void test();
+        PsfFont(PsfVersion version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size);
+        uint32_t height;
+        uint32_t width;
+        uint8_t* getGlyphaddr(uint32_t index);
+        void getLine(uint32_t c, uint32_t height, uint8_t line[]);
+        static void test();
 };
 

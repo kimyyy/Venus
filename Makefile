@@ -82,9 +82,9 @@ DEPENDS = $(DEPENDS_KERNEL) $(DEPENDS_LOADER)
 DEPENDS_LOADER = $(OBJECTS_LOADER:.o=.d)
 DEPENDS_KERNEL = $(OBJECTS_KERNEL:.o=.d)
 ASMS = $(OBJECTS:.o=.s)
-FONTDIR = ./resources
-FONT = $(wildcard $(FONTDIR)/*.psf)
-OBJECT_FONT = $(FONT:.psf=.o)
+PSFDIR = ./resources
+PSFFONTS = $(wildcard $(PSFDIR)/*.psf)
+OBJECT_FONT = $(PSFFONTS:.psf=.o)
 
 LOADER = $(EFIPATH)/BOOTX64.EFI
 KERNEL = $(FSPATH)/kernel.elf
@@ -146,7 +146,8 @@ $(OBJDIR_COMMON)/%.kernel.o: $(SRCDIR_COMMON)/%.cpp
 $(OBJDIR_KERNEL)/%.s : $(SRCDIR_KERNEL)/%.cpp
 	$(CXX_KERNEL) -S -o $@ $< $(CFLAGS_KERNEL) 
 
-$(OBJECT_FONT): $(FONT)
+# font
+$(PSFDIR)/%.o: $(PSFDIR)/%.psf
 	$(OBJCPY) $(OBJCPY_FLAGS) $< $@
 
 # use tools
