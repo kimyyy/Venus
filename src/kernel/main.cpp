@@ -3,6 +3,7 @@
 #include "framebuffer.hpp"
 #include "psf.hpp"
 #include <stdlib.h>
+#include "keyboard.hpp"
 
 void testnewlib() {
     int hoge = atoi("4");
@@ -10,12 +11,9 @@ void testnewlib() {
 
 extern "C"
 void KernelMain(BootInfo* bootInfo){
-    PsfFont::test();
     FrameBuffer fb = FrameBuffer(bootInfo->fb);
-    fb.test();
-    char str[20] = "Hello, kernel!";
-    for(int i = 0;i < 20 && str[i] != '\0';i++){
-        WriteIOPort8(0x3f8, str[i]);
-    }
-    while(1);
+    //fb.test();
+    //Serial::test();
+    Keyboard::test();
+    panic();
 }

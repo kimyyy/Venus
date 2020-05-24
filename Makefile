@@ -100,7 +100,7 @@ CXXINCLUDE = -I$(CXXLIBPATH)
 
 # tools
 QEMU = qemu-system-x86_64
-QEMU_FLAGS =  -m 4G -gdb tcp::10000 -cpu qemu64
+QEMU_FLAGS =  -m 4G -gdb tcp::10000 -cpu qemu64 -serial stdio
 #QEMU_ADDITIONAL_ARGS = -nographic
 QEMU_DBG_FLAG = -S
 DBG = gdb-multiarch

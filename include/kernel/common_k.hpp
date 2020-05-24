@@ -14,3 +14,8 @@ void assert(T actual, T expected){
 }
 
 void assert(bool condition);
+
+uint8_t intToChar(uint8_t integer);
+
+void intToStr10(uint8_t value, uint8_t *c);
+void intToStr16(uint8_t value, uint8_t *c);
