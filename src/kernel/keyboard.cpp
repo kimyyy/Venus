@@ -21,9 +21,9 @@ uint8_t Keyboard::getc(){
 void Keyboard::test(){
     Keyboard kbd;
     Serial serialout(IOPort::QemuCOM1);
-    uint8_t c[15];
+    uint8_t buf[15];
     while(true){
-        kbd.scanKeycode(c);
-        serialout.puts(c);
+        kbd.scanKeycode(buf);
+        serialout.puts(buf);
     }
 }

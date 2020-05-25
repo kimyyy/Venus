@@ -6,7 +6,6 @@
 #include <stdlib.h>
 
 
-
 class Point {
     public:
     uint32_t x;
@@ -28,14 +27,14 @@ struct Color {
     Color(uint8_t b, uint8_t g, uint8_t r): b(b), g(g), r(r){};
 };
 
-struct Pallet {
-    const Color green = Color(0, 255, 0);
-    const Color blue = Color(255, 0, 0);
-    const Color red = Color(0, 0, 255);
-    const Color white = Color(255, 255, 255);
-    const Color black = Color(0, 0, 0);
-    const Color yellow = Color(0, 255, 255);
-};
+namespace Pallet {
+    const Color green(0, 255, 0);
+    const Color blue(255, 0, 0);
+    const Color red(0, 0, 255);
+    const Color white(255, 255, 255);
+    const Color black(0, 0, 0);
+    const Color yellow(0, 255, 255);
+}
 
 class Rect {
     public:

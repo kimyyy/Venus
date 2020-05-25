@@ -6,16 +6,6 @@
 
 typedef char PsfSymbol;
 
-// information for each psf file
-// these values are available in only runtime
-extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_start;
-extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_end;
-extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_size;
-
-extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_start;
-extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_end;
-extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_size;
-
 // psf header 
 enum class PsfVersion {
     Version1,
@@ -44,6 +34,31 @@ struct Psf2Header {
     uint32_t width;
 };
 
+// information for each psf file
+// these values are available in only runtime
+extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_start;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_end;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus32x16_psf_size;
+
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_start;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_end;
+extern PsfSymbol _binary_resources_CyrKoi_Terminus16_psf_size;
+
+struct PsfInfo {
+    PsfVersion version;
+    PsfSymbol *start;
+    PsfSymbol *end;
+    PsfSymbol *size;
+    PsfInfo(PsfVersion _version, PsfSymbol* _start, PsfSymbol* _end, PsfSymbol* _size) : version(_version), start(_start), end(_end), size(_size){};
+    PsfInfo(){};
+};
+
+namespace PsfInfos {
+    static PsfInfo CyrKoi_Terminus32x16;
+    static PsfInfo CyrKoi_Terminus16;
+    void init();
+}
+
 class PsfFont {
     private:
         bool hasUnicodeTable;
@@ -56,7 +71,8 @@ class PsfFont {
     public:
         uint32_t height;
         uint32_t width;
-        PsfFont(PsfVersion version, PsfSymbol& start, PsfSymbol& end, PsfSymbol& size);
+        PsfFont(PsfVersion version, PsfSymbol* start, PsfSymbol* end, PsfSymbol* size);
+        PsfFont(PsfInfo psfinfo):PsfFont(psfinfo.version, psfinfo.start, psfinfo.end, psfinfo.size){};
         void getLine(uint32_t c, uint32_t height, uint8_t line[]);
         static void test();
 };

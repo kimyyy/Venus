@@ -120,18 +120,17 @@ void FrameBuffer::puts(const char* c,Point point, PsfFont font, Color fgcolor){
 
 
 void FrameBuffer::test(){
-    Pallet pallet;
-    Color green = pallet.green;
+    Color green = Pallet::green;
     drawPoint(Point(100, 100), green);
     drawLine(Point(100, 1), Point(100, 100), green);
     Rect rect(Point(100, 100), 50, 50);
     Rect r1(Point(100, 200), Point(200,100));
     drawRect(r1, green);
-    fillRect(rect, pallet.blue);
-    fillRect(r1, pallet.red);
+    fillRect(rect, Pallet::blue);
+    fillRect(r1, Pallet::red);
 
-    PsfFont psffont_cyrkoi(PsfVersion::Version2, _binary_resources_CyrKoi_Terminus32x16_psf_start, _binary_resources_CyrKoi_Terminus32x16_psf_end, _binary_resources_CyrKoi_Terminus32x16_psf_size);
-    putc("a", Point(200, 100), psffont_cyrkoi, pallet.white);
-    puts("Hello, framebuffer!", Point(200, 200), psffont_cyrkoi, pallet.white);
-    puts("Hello, \nframebuffer!", Point(200, 300), psffont_cyrkoi, pallet.white);
+    PsfFont psffont_cyrkoi(PsfInfos::CyrKoi_Terminus16);
+    putc("a", Point(200, 100), psffont_cyrkoi, Pallet::white);
+    puts("Hello, framebuffer!", Point(200, 200), psffont_cyrkoi, Pallet::white);
+    puts("Hello, \nframebuffer!", Point(200, 300), psffont_cyrkoi, Pallet::white);
 }
