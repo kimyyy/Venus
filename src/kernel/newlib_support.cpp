@@ -1,5 +1,7 @@
 #include "common_k.hpp"
+#include "serial.hpp"
 #include "bootInfo.hpp"
+#include <sys/stat.h>
 
 HeapInfo heapinfo;
 
@@ -8,12 +10,21 @@ int close(int file){
     panic();
 }
 
+void _exit(){
+    panic();
+}
+
+int fstat(int file, struct stat *st){
+    st->st_mode = S_IFCHR;
+    return 0;
+}
+
 int getpid(void){
     panic();
 }
 
 int isatty(int file){
-    panic();
+    return 1;
 }
 
 int kill(int pid, int sig){
@@ -51,8 +62,9 @@ char* sbrk(int incr){
 }
 
 int write(int file, char* ptr, int len){
-    panic();
+    Serial serial(IOPort::QemuCOM1);
+    serial.puts((uint8_t *)ptr);
+    return len;
 }
-
 
 }

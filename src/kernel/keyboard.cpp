@@ -8,10 +8,9 @@ uint8_t Keyboard::readData(){
     return readIOPort8((uint16_t)Port_KBD::Data);
 }
 
-void Keyboard::scanKeycode(uint8_t *c){
+uint8_t Keyboard::scanKeycode(){
     while(!IsBitmatch(readStatus(), (uint8_t)1));
-    uint8_t data = Bitmask(readData(), (uint8_t)0b01111111);
-    intToStr16(data, c);
+    return Bitmask(readData(), (uint8_t)0b01111111);
 }
 
 
@@ -20,10 +19,9 @@ uint8_t Keyboard::getc(){
 
 void Keyboard::test(){
     Keyboard kbd;
-    Serial serialout(IOPort::QemuCOM1);
-    uint8_t buf[15];
     while(true){
-        kbd.scanKeycode(buf);
-        serialout.puts(buf);
+        uint8_t code = kbd.scanKeycode();
+        int ret = printf("keycode is %x\n", code);
+        ret = 8;
     }
 }
