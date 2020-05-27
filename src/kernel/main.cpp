@@ -17,24 +17,27 @@ void testnewlib() {
     int ret = puts("puts test");
     int hoge = atoi("4");
     uint8_t* hage = (uint8_t*)malloc(10);
+    uint8_t* hage2 = (uint8_t*)malloc(80);
+    free(hage);
+    free(hage2);
+    hoge = 1;
 }
 
-void InitKernel(){
+void InitKernel(BootInfo *bootInfo){
     initStdio();
+    heapinfo = bootInfo->heapinfo;
 }
 
 extern "C"
 void KernelMain(BootInfo* bootInfo){
-    InitKernel();
+    InitKernel(bootInfo);
     PsfFont::test();
     Serial serial(IOPort::QemuCOM1);
     serial.puts((uint8_t *)"hello");
     FrameBuffer fb = FrameBuffer(bootInfo->fb);
-    uint64_t heapstart = bootInfo->heapinfo.start;
-    heapinfo = bootInfo->heapinfo;
     //fb.test();
     //Serial::test();
-    //testnewlib();
+    testnewlib();
     Keyboard::test();
     panic();
 }

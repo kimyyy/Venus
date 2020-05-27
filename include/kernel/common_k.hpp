@@ -2,15 +2,15 @@
 
 #include "common.hpp"
 #include "bootInfo.hpp"
+#include <stdio.h>
 
 void panic();
+void panic(const char *message);
 
 template<typename T>
 void assert(T actual, T expected){
     if(actual != expected){
-        // TODO: print message
-        // "actual is hoge, expected is bar"
-        panic();
+        panic("assert failed!");
     }
 }
 

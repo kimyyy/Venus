@@ -1,15 +1,20 @@
 #include "common_k.hpp"
 
 void panic(){
-    // TODO: print message
+    // stop working
+    printf("panic now!");
     while(1);
+}
+
+void panic(const char *message){
+    printf(message);
+    panic();
 }
 
 
 void assert(bool condition){
     if(!condition){
-        // TODO: print message: panic now
-        panic();
+        panic("assert failed!");
     }
 }
 
