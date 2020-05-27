@@ -40,12 +40,12 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     EfiFileProtocol *kernelFile;
     EfiFileProtocol *root;
 
-    EfiPhysicalAddress kernelElfBuf = 0x100000000;
-    uint64_t kernelElfBufsize;
+    EfiPhysicalAddress elfbufAddr = 0x100000000;
+    uint64_t elfbufSize;
 
     char kernelFileInfoBuf[200];
     EfiFileInfo *kernelFileInfo;
-    ull kernelFileInfoBuffersize = 200;
+    UINTN kernelFileInfoBuffersize = 200;
 
     Elf64_Ehdr *elfHeader;
     Elf64_Phdr *elfPhdr;
@@ -55,38 +55,38 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     // open root from where we boot
     root = openRootFile(ImageHandle);
 
-    Rect rect = {10, 10 ,100, 100};
-    draw_rect(rect, white);
-
     // open and read kernel.elf
     status = root->Open(root, &kernelFile, L"\\kernel.elf", EFI_FILE_MODE_READ, EFI_FILE_READ_ONLY);
     assert_status(status, L"OpenkernelFile");
 
     kernelFile->GetInfo(kernelFile, &EfiFileInfoGuid, &kernelFileInfoBuffersize,
-                        (void *)kernelFileInfoBuf);
+            (void *)kernelFileInfoBuf);
     assert_status(status, L"GetkernelFileInfo");
 
     kernelFileInfo = reinterpret_cast<EfiFileInfo*>(kernelFileInfoBuf);
     puts(kernelFileInfo->FileName);
     puts(L"\r\n");
 
+    // allocate buffer for elf file
     uint64_t page_size = (kernelFileInfo->FileSize + EfiPageSize - 1) /EfiPageSize;
-    kernelElfBufsize = page_size * EfiPageSize;
-    status = ST->BootServices->AllocatePages(AllocateMaxAddress, EfiLoaderData, page_size, (UINTN*)&kernelElfBuf);
+    elfbufSize = page_size * EfiPageSize;
+    status = ST->BootServices->AllocatePages(AllocateMaxAddress, EfiLoaderData,
+            page_size, (UINTN *)&elfbufAddr);
     assert_status(status, L"AllocatePageForKernelElfBuf");
 
-    status = kernelFile->Read(kernelFile, &kernelElfBufsize, (void*)kernelElfBuf);
+    status = kernelFile->Read(kernelFile, &elfbufSize, (void *)elfbufAddr);
     assert_status(status, L"ReadKernelElf");
 
     // parse elf header
-    elfHeader = reinterpret_cast<Elf64_Ehdr*>(kernelElfBuf);
+    elfHeader = reinterpret_cast<Elf64_Ehdr *>(elfbufAddr);
     puts(L"Elf Header: ");
     puts(L" e_phoff: ");
     puth(elfHeader->e_phoff, 8);
     puts(L" e_ehsize: ");
     puth(elfHeader->e_ehsize, 8);
     puts(L"\r\n");
-    elfPhdr = reinterpret_cast<Elf64_Phdr*>(kernelElfBuf + elfHeader->e_phoff);
+    // parse program header
+    elfPhdr = reinterpret_cast<Elf64_Phdr *>(elfbufAddr + elfHeader->e_phoff);
     for(int i = 0; i < elfHeader->e_phnum;i++){
         puts(L"Program Header: ");
         puth(i, 1);
@@ -104,14 +104,17 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
         puts(L"\r\n");
 
         if(elfPhdr[i].p_type != PT_LOAD)continue;
+        // if PT_LOAD, load to memory
         puts(L"copy from: ");
-        puth(kernelElfBuf + elfPhdr[i].p_offset, 16);
+        puth(elfbufAddr + elfPhdr[i].p_offset, 16);
         puts(L" to: ");
         puth(elfPhdr[i].p_paddr, 16);
         puts(L" for :");
         puth(elfPhdr[i].p_filesz, 8);
         puts(L" bytes \r\n");
-        memcpy(reinterpret_cast<char*>(elfPhdr[i].p_vaddr), reinterpret_cast<char*>(kernelElfBuf + elfPhdr[i].p_offset), elfPhdr[i].p_filesz);
+        memcpy(reinterpret_cast<char *>(elfPhdr[i].p_vaddr),
+                reinterpret_cast<char *>(elfbufAddr + elfPhdr[i].p_offset),
+                elfPhdr[i].p_filesz);
         puts(L"zeromem ");
         puth(elfPhdr[i].p_vaddr + elfPhdr[i].p_filesz, 16);
         puts(L" for: ");
@@ -125,6 +128,13 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
     fb.size = GOP->Mode->FrameBufferSize;
     fb.hr = GOP->Mode->Info->HorizontalResolution;
     fb.vr = GOP->Mode->Info->VerticalResolution;
+
+    UINTN heap_pages = 10;
+    uint64_t heap_size = 10 * 1<<12;
+    EfiPhysicalAddress heap_start = 0x120000000;
+    status = ST->BootServices->AllocatePages(AllocateAddress, EfiLoaderData,heap_pages, &heap_start);
+    assert_status(status, L"AllocateHeap");
+    HeapInfo hp = {heap_start, heap_size};
 
     // get memory map
     UINTN memorymap_size = 4096;
@@ -142,6 +152,7 @@ int efi_main(EfiHandle ImageHandle , EfiSystemTable *SystemTable){
 
     BootInfo bi;
     bi.fb = fb;
+    bi.heapinfo = hp;
     jumpToKernel((void*)elfHeader->e_entry, &bi);
 
     // panic

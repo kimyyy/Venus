@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.hpp"
+#include "bootInfo.hpp"
 
 void panic();
 
@@ -19,6 +20,7 @@ void assert(T& actual, T& expected, uint32_t length){
         assert(actual[i], expected[i]);
     }
 }
+
 
 void assert(bool condition);
 

@@ -8,6 +8,12 @@ struct FrameBufferInfo {
     uint32_t vr;
 };
 
+struct HeapInfo {
+    uint64_t start;
+    uint64_t size;
+};
+
 struct BootInfo {
     FrameBufferInfo fb;
+    HeapInfo heapinfo;
 };
