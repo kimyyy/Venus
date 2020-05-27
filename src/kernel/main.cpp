@@ -39,5 +39,6 @@ void KernelMain(BootInfo* bootInfo){
     //Serial::test();
     testnewlib();
     Keyboard::test();
+    printf("kernel end");
     panic();
 }

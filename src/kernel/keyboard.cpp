@@ -10,18 +10,20 @@ uint8_t Keyboard::readData(){
 
 uint8_t Keyboard::scanKeycode(){
     while(!IsBitmatch(readStatus(), (uint8_t)1));
+    while(!IsBitmatch(readData(), (uint8_t)0b10000000));
     return Bitmask(readData(), (uint8_t)0b01111111);
 }
 
 
 uint8_t Keyboard::getc(){
+    uint8_t keycode = scanKeycode();
+    return ascii_keymap[keycode];
 }
 
 void Keyboard::test(){
     Keyboard kbd;
-    while(true){
-        uint8_t code = kbd.scanKeycode();
-        int ret = printf("keycode is %x\n", code);
-        ret = 8;
+    uint8_t c;
+    while((c = kbd.getc()) != ASCII_ESC){
+        printf("%c", c);
     }
 }
