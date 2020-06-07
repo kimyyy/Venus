@@ -8,6 +8,11 @@
 
 extern HeapInfo heapinfo;
 
+void CPUID(){
+    asm volatile("mov $0x80000001, %eax");
+    asm volatile("cpuid");
+}
+
 void initStdio(){
     setbuf(stdout, NULL);
     setbuf(stdin, NULL);
@@ -30,14 +35,15 @@ void InitKernel(BootInfo *bootInfo){
 
 extern "C"
 void KernelMain(BootInfo* bootInfo){
+    CPUID();
     InitKernel(bootInfo);
-    PsfFont::test();
+    //PsfFont::test();
     Serial serial(IOPort::QemuCOM1);
-    serial.puts((uint8_t *)"hello");
+    //serial.puts((uint8_t *)"hello");
     FrameBuffer fb = FrameBuffer(bootInfo->fb);
     //fb.test();
     //Serial::test();
-    testnewlib();
+    //testnewlib();
     Keyboard::test();
     printf("kernel end");
     panic();
