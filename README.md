@@ -1,9 +1,13 @@
-# uefi_baremetal
+# Venus
 
-Baremetal uefi application written by c++.
+Toy Operating System written by c++.
 
-This application is based on a uefi_baremetal tutorial paper by Takuma Ogami.
-(https://github.com/cupnes/c92_uefi_bare_metal_programming_samples)
+Now,Venus implements
+
+- UEFI Support
+- Graphic output using FrameBuffer
+- Serial output
+- PS/2 Keyboard input
 
 # How to build and start
 
